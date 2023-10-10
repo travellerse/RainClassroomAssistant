@@ -1,0 +1,5 @@
+PyQt5
+pyttsx3
+requests
+urllib3
+websocket_client
