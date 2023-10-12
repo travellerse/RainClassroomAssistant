@@ -1,6 +1,5 @@
 import json
 import os
-import random
 import sys
 import threading
 
@@ -9,6 +8,7 @@ import requests
 import urllib3
 import win32api
 import win32con
+from numpy import random
 
 lock = threading.Lock()
 
@@ -33,13 +33,13 @@ def test_network():
     # 网络状态测试
     try:
         http = urllib3.PoolManager()
-        http.request('GET', 'https://baidu.com')
+        http.request('GET', 'https://pro.yuketang.cn')
         return True
     except:
         return False
 
 
-def calculate_waittime(limit, type, custom_time):
+def calculate_waittime(limit, type, custom_time2, custom_time3):
     # 计算答题等待时间
     '''
     type
@@ -60,11 +60,11 @@ def calculate_waittime(limit, type, custom_time):
     if type == 1:
         wait_time = default_calculate(limit)
     elif type == 2:
-        # 如果自定义等待时间超过当前题目的剩余时间，则采用默认算法
-        if custom_time > limit:
-            wait_time = default_calculate(limit)
-        else:
-            wait_time = custom_time
+        wait_time = custom_time2
+    elif type == 3:
+        wait_time = int(random.rand()*custom_time3/100*limit)
+    if wait_time > limit:
+        wait_time = default_calculate(limit)
     return wait_time
 
 
@@ -95,7 +95,8 @@ def get_initial_data():
                 "answer_delay": {
                     "type": 1,
                     "custom": {
-                        "time": 0
+                        "time2": 0,
+                        "time3": 99
                     }
                 }
             }

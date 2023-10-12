@@ -16,7 +16,7 @@ import functools
 class Config_Ui(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(430, 550)
+        Dialog.resize(450, 600)
         Dialog.setStyleSheet("background-color: rgb(255, 255, 255);\n"
 "font: 9pt \"微软雅黑\";")
         Dialog.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
@@ -152,11 +152,25 @@ class Config_Ui(object):
         self.delay_time_2_input = QtWidgets.QSpinBox(self.when_delay_time_2)
         self.delay_time_2_input.setObjectName("delay_time_2_input")
         self.verticalLayout_9.addWidget(self.delay_time_2_input)
-        self.label_2 = QtWidgets.QLabel(self.when_delay_time_2)
+        self.verticalLayout_8.addWidget(self.when_delay_time_2)
+        self.delay_time_radio_3 = QtWidgets.QRadioButton(self.when_answer_on)
+        self.delay_time_radio_3.setChecked(True)
+        self.delay_time_radio_3.setObjectName("delay_time_radio_3")
+        self.verticalLayout_8.addWidget(self.delay_time_radio_3)
+        self.when_delay_time_3 = QtWidgets.QWidget(self.when_answer_on)
+        self.when_delay_time_3.setEnabled(False)
+        self.when_delay_time_3.setObjectName("when_delay_time_3")
+        self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.when_delay_time_3)
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 3)
+        self.verticalLayout_10.setObjectName("verticalLayout_10")
+        self.delay_time_3_input = QtWidgets.QSpinBox(self.when_delay_time_3)
+        self.delay_time_3_input.setObjectName("delay_time_3_input")
+        self.verticalLayout_10.addWidget(self.delay_time_3_input)
+        self.label_2 = QtWidgets.QLabel(self.when_answer_on)
         self.label_2.setWordWrap(True)
         self.label_2.setObjectName("label_2")
-        self.verticalLayout_9.addWidget(self.label_2)
-        self.verticalLayout_8.addWidget(self.when_delay_time_2)
+        self.verticalLayout_8.addWidget(self.when_delay_time_3)
+        self.verticalLayout_8.addWidget(self.label_2)
         self.verticalLayout_5.addWidget(self.when_answer_on)
         self.verticalLayout_12.addWidget(self.answer_config)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -182,6 +196,7 @@ class Config_Ui(object):
         self.answer_on.stateChanged.connect(self.enable_answer_config)
         self.delay_time_radio_1.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_2.clicked.connect(self.enable_delay_custom)
+        self.delay_time_radio_3.clicked.connect(self.enable_delay_custom)
         self.save.clicked.connect(functools.partial(self.save_config,dialog=Dialog))
 
         self.retranslateUi(Dialog)
@@ -210,10 +225,16 @@ class Config_Ui(object):
 
     def enable_delay_custom(self):
         # 启用自定义延迟详细配置Widget
-        if self.delay_time_radio_2.isChecked():
-            self.when_delay_time_2.setEnabled(True)
+        if not self.delay_time_radio_1.isChecked():
+            if self.delay_time_radio_2.isChecked():
+                self.when_delay_time_2.setEnabled(True)
+                self.when_delay_time_3.setEnabled(False)
+            else:
+                self.when_delay_time_2.setEnabled(False)
+                self.when_delay_time_3.setEnabled(True)
         else:
             self.when_delay_time_2.setEnabled(False)
+            self.when_delay_time_3.setEnabled(False)
 
     def load_config(self, config):
         # 弹幕配置
@@ -235,7 +256,10 @@ class Config_Ui(object):
             self.delay_time_radio_1.setChecked(True)
         elif config["answer_config"]["answer_delay"]["type"] == 2:
             self.delay_time_radio_2.setChecked(True)
-        self.delay_time_2_input.setValue(config["answer_config"]["answer_delay"]["custom"]["time"])
+        elif config["answer_config"]["answer_delay"]["type"] == 3:
+            self.delay_time_radio_3.setChecked(True)
+        self.delay_time_2_input.setValue(config["answer_config"]["answer_delay"]["custom"]["time2"])
+        self.delay_time_3_input.setValue(config["answer_config"]["answer_delay"]["custom"]["time3"])
         self.dialog_config = config
 
     def save_config(self, dialog):
@@ -259,7 +283,10 @@ class Config_Ui(object):
             config["answer_config"]["answer_delay"]["type"] = 1
         elif self.delay_time_radio_2.isChecked():
             config["answer_config"]["answer_delay"]["type"] = 2
-        config["answer_config"]["answer_delay"]["custom"]["time"] = self.delay_time_2_input.value()
+        elif self.delay_time_radio_3.isChecked():
+            config["answer_config"]["answer_delay"]["type"] = 3
+        config["answer_config"]["answer_delay"]["custom"]["time2"] = self.delay_time_2_input.value()
+        config["answer_config"]["answer_delay"]["custom"]["time3"] = self.delay_time_3_input.value()
         # 保存
         config_path = get_config_path()
         with open(config_path,"w+") as f:
@@ -288,6 +315,7 @@ class Config_Ui(object):
         self.label_3.setText(_translate("Dialog", "答题延迟时长"))
         self.delay_time_radio_1.setText(_translate("Dialog", "系统默认（随机决定时间）"))
         self.delay_time_radio_2.setText(_translate("Dialog", "自定义（于收到题目n秒后自动回答）"))
+        self.delay_time_radio_3.setText(_translate("Dialog", "自定义（于收到题目前n%秒内随机决定时间）"))
         self.label_2.setText(_translate("Dialog", "注：如果您采用自定义延迟时长，当延迟时长大于题目所给时限时，将按照系统默认算法重新计算延迟时长。"))
         self.save.setText(_translate("Dialog", "保存"))
         self.cancel.setText(_translate("Dialog", "取消"))

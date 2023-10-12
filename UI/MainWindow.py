@@ -19,6 +19,7 @@ from Scripts.Monitor import monitor
 from Scripts.Utils import *
 from UI.Config import Config_Ui
 from UI.Login import Login_Ui
+from deepdiff import DeepDiff
 
 
 class MainWindow_Ui(QtCore.QObject):
@@ -177,7 +178,7 @@ class MainWindow_Ui(QtCore.QObject):
         config_route = get_config_path()
         self.config = self.check_config(dir_route, config_route)
 
-        self.add_message_signal.emit("当前版本：v0.0.4", 0)
+        self.add_message_signal.emit("当前版本：v0.0.5", 0)
         self.add_message_signal.emit("初始化完成", 0)
 
         # 登录状态检查
@@ -236,8 +237,14 @@ class MainWindow_Ui(QtCore.QObject):
         dialog = QtWidgets.QDialog()
         config_ui = Config_Ui()
         config_ui.setupUi(dialog)
-        # 加载配置文件
-        config_ui.load_config(self.config)
+        try:
+            # 加载配置文件
+            config_ui.load_config(self.config)
+        except:
+            dir_route = get_config_dir()
+            config_route = get_config_path()
+            self.config = self.check_config(dir_route, config_route)
+            config_ui.load_config(self.config)
         # 这里需要刷新一次自定义延迟部分的Widget
         config_ui.enable_delay_custom()
         if dialog.exec_():
@@ -290,6 +297,10 @@ class MainWindow_Ui(QtCore.QObject):
             try:
                 with open(config_route, "r") as f:
                     data = json.load(f)
+                    info = DeepDiff(get_initial_data(), data)
+                    for key in info:
+                        if key == "dictionary_item_added" or key == "dictionary_item_removed":
+                            raise Exception
                     self.add_message_signal.emit("配置文件已读取", 0)
                     return data
             except:

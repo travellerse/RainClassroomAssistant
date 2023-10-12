@@ -45,21 +45,25 @@ class Lesson:
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
         try:
-            os.mkdir("./cache")
+            os.mkdir("./downloads")
+        except:
+            pass
+        try:
+            os.mkdir("./downloads/cache")
         except:
             pass
         for slide in data["slides"]:
             index = slide["index"]
-            image_name = "./cache/"+str(index)+".jpg"
+            image_name = "./downloads/cache/"+str(index)+".jpg"
             pdf.add_page()
             response = http.request('GET', slide["cover"])
             with open(image_name, 'wb') as f:
                 f.write(response.data)
             pdf.image(name=image_name, x=0, y=0,
                       w=data["width"], h=data["height"])
-        pdf.output("./"+data["title"]+".pdf")
+        pdf.output("./downloads/"+data["title"]+".pdf")
         try:
-            shutil.rmtree("./cache")
+            shutil.rmtree("./downloads/cache")
         except:
             pass
         self.add_message(data["title"]+".pdf"+" 下载完成", 0)
@@ -88,7 +92,7 @@ class Lesson:
         # 回答问题
         if answer and problemtype != 3:
             wait_time = calculate_waittime(
-                limit, self.config["answer_config"]["answer_delay"]["type"], self.config["answer_config"]["answer_delay"]["custom"]["time"])
+                limit, self.config["answer_config"]["answer_delay"]["type"], self.config["answer_config"]["answer_delay"]["custom"]["time2"], self.config["answer_config"]["answer_delay"]["custom"]["time3"])
             if wait_time != 0:
                 meg = "%s检测到问题，将在%s秒后自动回答，答案为%s" % (
                     self.lessonname, wait_time, answer)
@@ -225,12 +229,8 @@ class Lesson:
                 if self.config["auto_answer"]:
                     self.start_answer(data["problemid"], time_left)
                 else:
-                    if time_left == -1:
-                        meg = "%s检测到问题，该题不限时，请尽快前往雨课堂回答" % (self.lessonname)
-                        self.add_message(meg, 3)
-                    else:
-                        meg = "%s检测到问题，请在%s秒内前往雨课堂回答" % (
-                            self.lessonname, time_left)
+                    self.add_message("%s检测到问题，但未开启自动回答" %
+                                     self.lessonname, 3)
 
     def start_answer(self, problemid, limit):
         for promble in self.problems_ls:
