@@ -13,13 +13,13 @@ import json
 import os
 import threading
 
+from deepdiff import DeepDiff
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Scripts.Monitor import monitor
 from Scripts.Utils import *
 from UI.Config import Config_Ui
 from UI.Login import Login_Ui
-from deepdiff import DeepDiff
 
 
 class MainWindow_Ui(QtCore.QObject):
