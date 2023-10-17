@@ -73,7 +73,7 @@ def get_initial_data():
     initial_data = \
         {
             "sessionid": "",
-            "auto_danmu": True,
+            "auto_danmu": False,
             "danmu_config": {
                 "danmu_limit": 5
             },
@@ -97,6 +97,16 @@ def get_initial_data():
                     "custom": {
                         "time2": 0,
                         "time3": 99
+                    }
+                }
+            },
+            "sign_delay": True,
+            "sign_config": {
+                "delay_time": {
+                    "type": 1,
+                    "custom": {
+                        "time2": 0,
+                        "time3": 50
                     }
                 }
             }
