@@ -9,6 +9,7 @@ import urllib3
 import win32api
 import win32con
 from numpy import random
+from math import exp
 
 lock = threading.Lock()
 
@@ -38,6 +39,33 @@ def test_network():
     except:
         return False
 
+# 类泊松分布：答题等待时间
+def lam(limit):
+    if limit == -1:
+        lam = random.randint(5,25)
+    elif limit <= 30:
+        lam = limit/3
+    elif limit >= 90:
+        lam = limit/2-30
+    else:
+        lam = limit/5
+    return lam
+def rand_poisson(lam):
+    base = exp(-lam)
+    sum = 1
+    answer_time = 0
+    while sum > base:
+        sum = sum*random.random()
+        answer_time += 1
+    return answer_time
+def possion_time(limit):
+    lamb = lam(limit)
+    ans_time = rand_poisson(lamb) + random.random()
+    if ans_time >= lamb*2:
+        ans_time = lamb*1.5 + random.random()
+    elif ans_time <= lamb/10 or ans_time <= 5:
+        ans_time = lamb/10 + random.random()
+    return ans_time
 
 def calculate_waittime(limit, type, custom_time2, custom_time3):
     # 计算答题等待时间
@@ -45,18 +73,12 @@ def calculate_waittime(limit, type, custom_time2, custom_time3):
     type
     1: 随机
     2: 自定义
+    3: 按比例均匀随机
     '''
     def default_calculate(limit):
         # 默认的随机答题等待时间算法
-        if limit == -1:
-            wait_time = random.randint(5, 20)
-        else:
-            if limit > 15:
-                wait_time = random.randint(5, limit-10)
-            else:
-                wait_time = 0
-        return wait_time
-
+        # 默认随机算法更改为类泊松分布
+        return possion_time(limit)
     if type == 1:
         wait_time = default_calculate(limit)
     elif type == 2:
