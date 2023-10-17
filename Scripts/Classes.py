@@ -28,7 +28,7 @@ class Lesson:
         self.receive_danmu = {}
         self.sent_danmu_dict = {}
         self.danmu_dict = {}
-        self.problesms_ls = []
+        self.problems_ls = []
         self.unlocked_problem = []
         self.classmates_ls = []
         self.add_message = main_ui.add_message_signal.emit
@@ -85,7 +85,6 @@ class Lesson:
                   if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
-        self.add_message("获取到%s的题目" % self.lessonname, 3)
         return problems
 
     def answer_questions(self, problemid, problemtype, answer, limit):

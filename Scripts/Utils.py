@@ -96,7 +96,7 @@ def get_initial_data():
                     "type": 1,
                     "custom": {
                         "time2": 0,
-                        "time3": 99
+                        "time3": 50
                     }
                 }
             },
