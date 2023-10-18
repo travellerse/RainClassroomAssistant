@@ -36,6 +36,52 @@ class Config_Ui(object):
         self.verticalLayout_12 = QtWidgets.QVBoxLayout(
             self.scrollAreaWidgetContents)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
+
+        self.sign_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.sign_config.setObjectName("sign_config")
+        self.verticalLayout_sign_config = QtWidgets.QVBoxLayout(
+            self.sign_config)
+        self.verticalLayout_sign_config.setObjectName(
+            "verticalLayout_sign_config")
+        self.delay_sign_on = QtWidgets.QCheckBox(self.sign_config)
+        self.delay_sign_on.setObjectName("delay_sign_on")
+        self.verticalLayout_sign_config.addWidget(self.delay_sign_on)
+        self.when_delay_on = QtWidgets.QWidget(self.sign_config)
+        self.when_delay_on.setEnabled(True)
+        self.when_delay_on.setObjectName("when_delay_on")
+        self.verticalLayout_when_delay_on = QtWidgets.QVBoxLayout(
+            self.when_delay_on)
+        self.verticalLayout_when_delay_on.setObjectName(
+            "verticalLayout_when_delay_on")
+        self.label_9 = QtWidgets.QLabel(self.when_delay_on)
+        self.label_9.setObjectName("label_9")
+        self.verticalLayout_when_delay_on.addWidget(self.label_9)
+
+        self.delay_time_radio = QtWidgets.QRadioButton(self.when_delay_on)
+        self.delay_time_radio.setChecked(True)
+        self.delay_time_radio.setObjectName("delay_time_radio")
+        self.verticalLayout_when_delay_on.addWidget(self.delay_time_radio)
+        self.when_delay_time = QtWidgets.QWidget(self.when_delay_on)
+        self.when_delay_time.setEnabled(True)
+        self.when_delay_time.setObjectName("when_delay_time")
+        self.verticalLayout_when_delay_time = QtWidgets.QVBoxLayout(
+            self.when_delay_time)
+        self.verticalLayout_when_delay_time.setContentsMargins(0, 0, 0, 3)
+        self.verticalLayout_when_delay_time.setObjectName(
+            "verticalLayout_when_delay_time")
+        self.delay_time_input = QtWidgets.QSpinBox(self.when_delay_time)
+        self.delay_time_input.setObjectName("delay_time_input")
+        self.verticalLayout_when_delay_time.addWidget(self.delay_time_input)
+        self.verticalLayout_when_delay_on.addWidget(self.when_delay_time)
+
+        self.no_delay_radio = QtWidgets.QRadioButton(self.when_delay_on)
+        self.no_delay_radio.setChecked(False)
+        self.no_delay_radio.setObjectName("no_delay_radio")
+        self.verticalLayout_when_delay_on.addWidget(self.no_delay_radio)
+
+        self.verticalLayout_sign_config.addWidget(self.when_delay_on)
+        self.verticalLayout_12.addWidget(self.sign_config)
+
         self.danmu_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
         self.danmu_config.setObjectName("danmu_config")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.danmu_config)
@@ -127,6 +173,7 @@ class Config_Ui(object):
         self.verticalLayout_10.addWidget(self.widget_3)
         self.verticalLayout_4.addWidget(self.when_audio_on)
         self.verticalLayout_12.addWidget(self.audio_config)
+
         self.answer_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
         self.answer_config.setObjectName("answer_config")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.answer_config)
@@ -149,33 +196,26 @@ class Config_Ui(object):
         self.delay_time_radio_2 = QtWidgets.QRadioButton(self.when_answer_on)
         self.delay_time_radio_2.setObjectName("delay_time_radio_2")
         self.verticalLayout_8.addWidget(self.delay_time_radio_2)
-        self.when_delay_time_2 = QtWidgets.QWidget(self.when_answer_on)
-        self.when_delay_time_2.setEnabled(False)
-        self.when_delay_time_2.setObjectName("when_delay_time_2")
-        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.when_delay_time_2)
-        self.verticalLayout_9.setContentsMargins(0, 0, 0, 3)
-        self.verticalLayout_9.setObjectName("verticalLayout_9")
-        self.delay_time_2_input = QtWidgets.QSpinBox(self.when_delay_time_2)
-        self.delay_time_2_input.setObjectName("delay_time_2_input")
-        self.verticalLayout_9.addWidget(self.delay_time_2_input)
-        self.verticalLayout_8.addWidget(self.when_delay_time_2)
         self.delay_time_radio_3 = QtWidgets.QRadioButton(self.when_answer_on)
-        self.delay_time_radio_3.setChecked(True)
         self.delay_time_radio_3.setObjectName("delay_time_radio_3")
         self.verticalLayout_8.addWidget(self.delay_time_radio_3)
-        self.when_delay_time_3 = QtWidgets.QWidget(self.when_answer_on)
-        self.when_delay_time_3.setEnabled(False)
-        self.when_delay_time_3.setObjectName("when_delay_time_3")
-        self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.when_delay_time_3)
+        self.delay_time_radio_4 = QtWidgets.QRadioButton(self.when_answer_on)
+        self.delay_time_radio_4.setChecked(True)
+        self.delay_time_radio_4.setObjectName("delay_time_radio_4")
+        self.verticalLayout_8.addWidget(self.delay_time_radio_4)
+        self.when_delay_time_4 = QtWidgets.QWidget(self.when_answer_on)
+        self.when_delay_time_4.setEnabled(False)
+        self.when_delay_time_4.setObjectName("when_delay_time_4")
+        self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.when_delay_time_4)
         self.verticalLayout_10.setContentsMargins(0, 0, 0, 3)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
-        self.delay_time_3_input = QtWidgets.QSpinBox(self.when_delay_time_3)
-        self.delay_time_3_input.setObjectName("delay_time_3_input")
-        self.verticalLayout_10.addWidget(self.delay_time_3_input)
+        self.delay_time_4_input = QtWidgets.QSpinBox(self.when_delay_time_4)
+        self.delay_time_4_input.setObjectName("delay_time_4_input")
+        self.verticalLayout_10.addWidget(self.delay_time_4_input)
         self.label_2 = QtWidgets.QLabel(self.when_answer_on)
         self.label_2.setWordWrap(True)
         self.label_2.setObjectName("label_2")
-        self.verticalLayout_8.addWidget(self.when_delay_time_3)
+        self.verticalLayout_8.addWidget(self.when_delay_time_4)
         self.verticalLayout_8.addWidget(self.label_2)
         self.verticalLayout_5.addWidget(self.when_answer_on)
         self.verticalLayout_12.addWidget(self.answer_config)
@@ -197,17 +237,28 @@ class Config_Ui(object):
 
         # 动作绑定
         self.cancel.clicked.connect(Dialog.reject)
+        self.delay_sign_on.stateChanged.connect(self.enable_sign_config)
+        self.delay_time_radio.clicked.connect(self.enable_delay_sign_custom)
+        self.no_delay_radio.clicked.connect(self.enable_delay_sign_custom)
         self.danmu_on.stateChanged.connect(self.enable_danmu_config)
         self.audio_on.stateChanged.connect(self.enable_audio_config)
         self.answer_on.stateChanged.connect(self.enable_answer_config)
         self.delay_time_radio_1.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_2.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_3.clicked.connect(self.enable_delay_custom)
+        self.delay_time_radio_4.clicked.connect(self.enable_delay_custom)
         self.save.clicked.connect(functools.partial(
             self.save_config, dialog=Dialog))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def enable_sign_config(self):
+        # 启用自动签到详细配置Widget
+        if self.delay_sign_on.isChecked():
+            self.when_delay_on.setEnabled(True)
+        else:
+            self.when_delay_on.setEnabled(False)
 
     def enable_danmu_config(self):
         # 启用自动弹幕详细配置Widget
@@ -230,20 +281,29 @@ class Config_Ui(object):
         else:
             self.when_answer_on.setEnabled(False)
 
+    def enable_delay_sign_custom(self):
+        # 启用自定义延迟详细配置Widget
+        if not self.delay_time_radio.isChecked():
+            self.when_delay_time.setEnabled(False)
+        else:
+            self.when_delay_time.setEnabled(True)
+
     def enable_delay_custom(self):
         # 启用自定义延迟详细配置Widget
-        if not self.delay_time_radio_1.isChecked():
-            if self.delay_time_radio_2.isChecked():
-                self.when_delay_time_2.setEnabled(True)
-                self.when_delay_time_3.setEnabled(False)
-            else:
-                self.when_delay_time_2.setEnabled(False)
-                self.when_delay_time_3.setEnabled(True)
+        if not self.delay_time_radio_4.isChecked():
+            self.when_delay_time_4.setEnabled(False)
         else:
-            self.when_delay_time_2.setEnabled(False)
-            self.when_delay_time_3.setEnabled(False)
+            self.when_delay_time_4.setEnabled(True)
 
     def load_config(self, config):
+        # 签到配置
+        self.delay_sign_on.setChecked(config["sign_delay"])
+        if config["sign_config"]["delay_time"]["type"] == 1:
+            self.delay_time_radio.setChecked(True)
+        elif config["sign_config"]["delay_time"]["type"] == 2:
+            self.no_delay_radio.setChecked(True)
+        self.delay_time_input.setValue(
+            config["sign_config"]["delay_time"]["custom"]["time"])
         # 弹幕配置
         self.danmu_on.setChecked(config["auto_danmu"])
         self.danmu_spinBox.setValue(config["danmu_config"]["danmu_limit"])
@@ -273,10 +333,10 @@ class Config_Ui(object):
             self.delay_time_radio_2.setChecked(True)
         elif config["answer_config"]["answer_delay"]["type"] == 3:
             self.delay_time_radio_3.setChecked(True)
-        self.delay_time_2_input.setValue(
-            config["answer_config"]["answer_delay"]["custom"]["time2"])
-        self.delay_time_3_input.setValue(
-            config["answer_config"]["answer_delay"]["custom"]["time3"])
+        elif config["answer_config"]["answer_delay"]["type"] == 4:
+            self.delay_time_radio_4.setChecked(True)
+        self.delay_time_4_input.setValue(
+            config["answer_config"]["answer_delay"]["custom"]["percent"])
         self.dialog_config = config
 
     def save_config(self, dialog):
@@ -302,8 +362,9 @@ class Config_Ui(object):
             config["answer_config"]["answer_delay"]["type"] = 2
         elif self.delay_time_radio_3.isChecked():
             config["answer_config"]["answer_delay"]["type"] = 3
-        config["answer_config"]["answer_delay"]["custom"]["time2"] = self.delay_time_2_input.value()
-        config["answer_config"]["answer_delay"]["custom"]["time3"] = self.delay_time_3_input.value()
+        elif self.delay_time_radio_4.isChecked():
+            config["answer_config"]["answer_delay"]["type"] = 4
+        config["answer_config"]["answer_delay"]["custom"]["percent"] = self.delay_time_4_input.value()
         # 保存
         config_path = get_config_path()
         with open(config_path, "w+") as f:
@@ -313,6 +374,13 @@ class Config_Ui(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "配置"))
+        self.sign_config.setTitle(_translate("Dialog", "签到配置"))
+        self.delay_sign_on.setText(_translate("Dialog", "启用延时签到"))
+        self.label_9.setText(_translate("Dialog", "签到延迟时长"))
+        self.delay_time_radio.setText(
+            _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）"))
+        self.no_delay_radio.setText(
+            _translate("Dialog", "不延时"))
         self.danmu_config.setTitle(_translate("Dialog", "弹幕配置"))
         self.danmu_on.setText(_translate("Dialog", "启用自动发送弹幕"))
         self.label.setText(_translate("Dialog", "自动弹幕阈值（每分钟内收到n条弹幕后自动发送相同弹幕）"))
@@ -330,10 +398,13 @@ class Config_Ui(object):
         self.answer_config.setTitle(_translate("Dialog", "答题配置"))
         self.answer_on.setText(_translate("Dialog", "启用自动答题"))
         self.label_3.setText(_translate("Dialog", "答题延迟时长"))
-        self.delay_time_radio_1.setText(_translate("Dialog", "系统默认（随机决定时间）"))
+        self.delay_time_radio_1.setText(
+            _translate("Dialog", "中庸（于收到题目前50%秒内随机决定时间）"))
         self.delay_time_radio_2.setText(
-            _translate("Dialog", "自定义（于收到题目n秒后自动回答）"))
+            _translate("Dialog", "激进（于收到题目前30%秒内随机决定时间）"))
         self.delay_time_radio_3.setText(
+            _translate("Dialog", "保守（于收到题目前70%秒内随机决定时间）"))
+        self.delay_time_radio_4.setText(
             _translate("Dialog", "自定义（于收到题目前n%秒内随机决定时间）"))
         self.label_2.setText(_translate(
             "Dialog", "注：如果您采用自定义延迟时长，当延迟时长大于题目所给时限时，将按照系统默认算法重新计算延迟时长。"))

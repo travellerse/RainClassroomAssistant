@@ -1,5 +1,8 @@
+import random
 import threading
 import time
+from distutils.command.config import config
+from turtle import delay
 
 import requests
 
@@ -62,10 +65,16 @@ def monitor(main_ui):
             classroomid = lesson["classroomId"]
             lesson_obj = Lesson(lessionid, lessonname, classroomid, main_ui)
             if lesson_obj not in on_lesson_list:
+                if config["sign_delay"]:
+                    delay_time = random.randint(10, max(10, config["sign_config"]
+                                                ["delay_time"]["custom"]["time"]))
                 thread = threading.Thread(
-                    target=lesson_obj.start_lesson, args=(del_onclass,), daemon=True)
+                    target=lesson_obj.start_lesson, args=(del_onclass, delay_time,), daemon=True)
                 thread.start()
-                meg = "检测到课程%s正在上课，已加入监听列表" % lessonname
+                if delay_time == 0:
+                    meg = f"检测到课程{lessonname}正在上课，已加入监听列表"
+                else:
+                    meg = f"检测到课程{lessonname}正在上课，将于{delay_time}秒后加入监听列表"
                 main_ui.add_message_signal.emit(meg, 7)
                 on_lesson_list.append(lesson_obj)
 

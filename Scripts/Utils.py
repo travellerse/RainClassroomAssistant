@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import threading
+from math import exp
 
 import pyttsx3
 import requests
@@ -9,7 +10,6 @@ import urllib3
 import win32api
 import win32con
 from numpy import random
-from math import exp
 
 lock = threading.Lock()
 
@@ -39,17 +39,26 @@ def test_network():
     except:
         return False
 
+
 # 类泊松分布：答题等待时间
-def lam(limit):
-    if limit == -1:
-        lam = random.randint(5,25)
-    elif limit <= 30:
-        lam = limit/3
-    elif limit >= 90:
-        lam = limit/2-30
+def lam(limit, percent=None):
+    if percent == None:
+        if limit == -1:
+            lam = random.randint(5, 25)
+        elif limit <= 30:
+            lam = limit/3
+        elif limit >= 90:
+            lam = limit/2-30
+        else:
+            lam = limit/5
     else:
-        lam = limit/5
+        if limit == -1:
+            lam = random.randint(5, 25)
+        else:
+            lam = limit*percent*0.9/150
     return lam
+
+
 def rand_poisson(lam):
     base = exp(-lam)
     sum = 1
@@ -57,37 +66,31 @@ def rand_poisson(lam):
     while sum > base:
         sum = sum*random.random()
         answer_time += 1
-    return answer_time
-def possion_time(limit):
-    lamb = lam(limit)
-    ans_time = rand_poisson(lamb) + random.random()
-    if ans_time >= lamb*2:
-        ans_time = lamb*1.5 + random.random()
-    elif ans_time <= lamb/10 or ans_time <= 5:
-        ans_time = lamb/10 + random.random()
-    return ans_time
+    return min(answer_time, lam*1.4)
 
-def calculate_waittime(limit, type, custom_time2, custom_time3):
+
+def calculate_waittime(limit, type, custom_percent=50):
     # 计算答题等待时间
     '''
     type
-    1: 随机
-    2: 自定义
-    3: 按比例均匀随机
+    1: 中庸
+    2: 激进
+    3: 保守
+    4: 自定义
     '''
-    def default_calculate(limit):
-        # 默认的随机答题等待时间算法
-        # 默认随机算法更改为类泊松分布
-        return possion_time(limit)
     if type == 1:
-        wait_time = default_calculate(limit)
+        wait_time = rand_poisson(lam(limit, 65))
     elif type == 2:
-        wait_time = custom_time2
+        wait_time = rand_poisson(lam(limit, 35))
     elif type == 3:
-        wait_time = int(random.rand()*custom_time3/100*limit)
+        wait_time = rand_poisson(lam(limit, 85))
+    elif type == 4:
+        wait_time = rand_poisson(lam(limit, custom_percent))
     if wait_time > limit:
-        wait_time = default_calculate(limit)
-    return wait_time
+        if __name__ == '__main__':
+            raise Exception("Error: wait_time > limit")
+        wait_time = random.randint(int(limit*0.25), int(limit*0.75))
+    return int(wait_time)
 
 
 def get_initial_data():
@@ -117,8 +120,7 @@ def get_initial_data():
                 "answer_delay": {
                     "type": 1,
                     "custom": {
-                        "time2": 0,
-                        "time3": 50
+                        "percent": 50
                     }
                 }
             },
@@ -127,8 +129,7 @@ def get_initial_data():
                 "delay_time": {
                     "type": 1,
                     "custom": {
-                        "time2": 0,
-                        "time3": 50
+                        "time": 20
                     }
                 }
             }
@@ -195,4 +196,29 @@ def resource_path(relative_path):
 
 
 if __name__ == '__main__':
-    show_info("x的问题没有找到答案，请在120秒内前往雨课堂回答", "Problem")
+    x = []
+    limit = 60
+    percent = 95
+    _type = 4
+    if _type == 1:
+        percent = 65
+    elif _type == 2:
+        percent = 35
+    elif _type == 3:
+        percent = 85
+    lamb = lam(limit, percent)
+    print(f'lam = {lamb}')
+    _max = 0
+    for i in range(100000):
+        x.append(calculate_waittime(limit, _type, percent))
+        if x[i] > _max:
+            _max = x[i]
+        if x[i] > limit*percent/100:
+            print('error')
+            print(x[i])
+            break
+
+    print(sum(x)/len(x))
+    print(_max, _max/limit/percent*100)
+    show_info(
+        f"x的问题没有找到答案，请在{calculate_waittime(limit, _type, percent)}秒内前往雨课堂回答", "Problem")

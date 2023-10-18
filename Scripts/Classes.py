@@ -91,7 +91,7 @@ class Lesson:
         # 回答问题
         if answer and problemtype != 3:
             wait_time = calculate_waittime(
-                limit, self.config["answer_config"]["answer_delay"]["type"], self.config["answer_config"]["answer_delay"]["custom"]["time2"], self.config["answer_config"]["answer_delay"]["custom"]["time3"])
+                limit, self.config["answer_config"]["answer_delay"]["type"], self.config["answer_config"]["answer_delay"]["custom"]["percent"])
             if wait_time != 0:
                 meg = "%s检测到问题，将在%s秒后自动回答，答案为%s" % (
                     self.lessonname, wait_time, answer)
@@ -262,7 +262,8 @@ class Lesson:
                          "problemid": promblemid, "msgid": 1}
         wsapp.send(json.dumps(query_problem))
 
-    def start_lesson(self, callback):
+    def start_lesson(self, delay, callback):
+        time.sleep(delay*1000)
         self.auth = self.checkin_class()
         rtn = self.get_lesson_info()
         teacher = rtn["teacher"]["name"]
