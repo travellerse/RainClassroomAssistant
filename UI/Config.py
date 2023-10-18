@@ -58,7 +58,7 @@ class Config_Ui(object):
         self.verticalLayout_when_delay_on.addWidget(self.label_9)
 
         self.delay_time_radio = QtWidgets.QRadioButton(self.when_delay_on)
-        self.delay_time_radio.setChecked(True)
+        self.delay_time_radio.setChecked(False)
         self.delay_time_radio.setObjectName("delay_time_radio")
         self.verticalLayout_when_delay_on.addWidget(self.delay_time_radio)
         self.when_delay_time = QtWidgets.QWidget(self.when_delay_on)
@@ -298,10 +298,16 @@ class Config_Ui(object):
     def load_config(self, config):
         # 签到配置
         self.delay_sign_on.setChecked(config["sign_delay"])
+        if self.delay_sign_on.isChecked():
+            self.when_delay_on.setEnabled(True)
+        else:
+            self.when_delay_on.setEnabled(False)
         if config["sign_config"]["delay_time"]["type"] == 1:
             self.delay_time_radio.setChecked(True)
+            self.when_delay_time.setEnabled(True)
         elif config["sign_config"]["delay_time"]["type"] == 2:
             self.no_delay_radio.setChecked(True)
+            self.when_delay_time.setEnabled(False)
         self.delay_time_input.setValue(
             config["sign_config"]["delay_time"]["custom"]["time"])
         # 弹幕配置
@@ -341,6 +347,13 @@ class Config_Ui(object):
 
     def save_config(self, dialog):
         config = self.dialog_config
+        # 签到配置
+        config["sign_delay"] = self.delay_sign_on.isChecked()
+        if self.delay_time_radio.isChecked():
+            config["sign_config"]["delay_time"]["type"] = 1
+        elif self.no_delay_radio.isChecked():
+            config["sign_config"]["delay_time"]["type"] = 2
+        config["sign_config"]["delay_time"]["custom"]["time"] = self.delay_time_input.value()
         # 弹幕配置
         config["auto_danmu"] = self.danmu_on.isChecked()
         config["danmu_config"]["danmu_limit"] = self.danmu_spinBox.value()

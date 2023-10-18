@@ -263,7 +263,7 @@ class Lesson:
         wsapp.send(json.dumps(query_problem))
 
     def start_lesson(self, delay, callback):
-        time.sleep(delay*1000)
+        time.sleep(delay)
         self.auth = self.checkin_class()
         rtn = self.get_lesson_info()
         teacher = rtn["teacher"]["name"]
