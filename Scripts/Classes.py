@@ -1,10 +1,10 @@
 import json
 import os
 import random
-import shutil
 import threading
 import time
 
+import deepdiff
 import requests
 import urllib3
 import websocket
@@ -44,29 +44,43 @@ class Lesson:
         self.add_message("开始下载ppt : "+data["title"]+".pdf", 0)
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
+        downloadpath = "downloads"
+        cachepath = downloadpath+"\\rainclasscache\\"+data["title"]
         try:
-            os.mkdir("./downloads")
+            if not os.path.exists(downloadpath):
+                os.mkdir(downloadpath)
+            if not os.path.exists(downloadpath+"\\rainclasscache"):
+                os.mkdir(downloadpath+"\\rainclasscache")
+            if not os.path.exists(cachepath):
+                os.mkdir(cachepath)
+            flag = False
+            for slide in data["slides"]:
+                index = slide["index"]
+                image_name = cachepath+"\\"+str(index)+".jpg"
+                if index == 1 and os.path.exists(image_name) == True:
+                    test_image_name = cachepath+"\\test"+str(index)+".jpg"
+                    response = http.request('GET', slide["cover"])
+                    with open(test_image_name, 'wb') as f:
+                        f.write(response.data)
+                    with open(test_image_name, 'rb') as f:
+                        image_data = f.read()
+                    with open(image_name, 'rb') as f:
+                        test_image_data = f.read()
+                    # print(deepdiff.DeepDiff(image_data, test_image_data))
+                    if deepdiff.DeepDiff(image_data, test_image_data) == {}:
+                        flag = True
+                    os.remove(test_image_name)
+                pdf.add_page()
+                if os.path.exists(image_name) == False or flag == False:
+                    response = http.request('GET', slide["cover"])
+                    with open(image_name, 'wb') as f:
+                        f.write(response.data)
+                pdf.image(name=image_name, x=0, y=0,
+                          w=data["width"], h=data["height"])
+            pdf.output(downloadpath+"\\"+data["title"]+".pdf")
+            self.add_message(data["title"]+".pdf"+" 下载完成", 0)
         except:
-            pass
-        try:
-            os.mkdir("./downloads/cache")
-        except:
-            pass
-        for slide in data["slides"]:
-            index = slide["index"]
-            image_name = "./downloads/cache/"+str(index)+".jpg"
-            pdf.add_page()
-            response = http.request('GET', slide["cover"])
-            with open(image_name, 'wb') as f:
-                f.write(response.data)
-            pdf.image(name=image_name, x=0, y=0,
-                      w=data["width"], h=data["height"])
-        pdf.output("./downloads/"+data["title"]+".pdf")
-        try:
-            shutil.rmtree("./downloads/cache")
-        except:
-            pass
-        self.add_message(data["title"]+".pdf"+" 下载完成", 0)
+            self.add_message(data["title"]+".pdf"+" 下载失败。考虑使用管理员权限启动", 0)
 
     def download_ppt(self, presentationid):
         threading.Thread(target=self._download, args=(
