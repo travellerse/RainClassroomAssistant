@@ -3,12 +3,13 @@ import os
 import random
 import threading
 import time
+from tkinter import font
 
-import deepdiff
 import requests
 import urllib3
 import websocket
 from fpdf import FPDF
+from PIL import Image, ImageDraw, ImageFont
 
 from Scripts.Utils import calculate_waittime, dict_result, get_user_info
 
@@ -29,6 +30,7 @@ class Lesson:
         self.sent_danmu_dict = {}
         self.danmu_dict = {}
         self.problems_ls = []
+        self.problems_dict = {}
         self.unlocked_problem = []
         self.classmates_ls = []
         self.add_message = main_ui.add_message_signal.emit
@@ -41,6 +43,7 @@ class Lesson:
         self.main_ui = main_ui
 
     def _download(self, data):
+        self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : "+data["title"]+".pdf", 0)
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
@@ -53,28 +56,22 @@ class Lesson:
                 os.mkdir(downloadpath+"\\rainclasscache")
             if not os.path.exists(cachepath):
                 os.mkdir(cachepath)
-            flag = False
             for slide in data["slides"]:
                 index = slide["index"]
                 image_name = cachepath+"\\"+str(index)+".jpg"
-                if index == 1 and os.path.exists(image_name) == True:
-                    test_image_name = cachepath+"\\test"+str(index)+".jpg"
-                    response = http.request('GET', slide["cover"])
-                    with open(test_image_name, 'wb') as f:
-                        f.write(response.data)
-                    with open(test_image_name, 'rb') as f:
-                        image_data = f.read()
-                    with open(image_name, 'rb') as f:
-                        test_image_data = f.read()
-                    # print(deepdiff.DeepDiff(image_data, test_image_data))
-                    if deepdiff.DeepDiff(image_data, test_image_data) == {}:
-                        flag = True
-                    os.remove(test_image_name)
                 pdf.add_page()
-                if os.path.exists(image_name) == False or flag == False:
-                    response = http.request('GET', slide["cover"])
-                    with open(image_name, 'wb') as f:
-                        f.write(response.data)
+                response = http.request('GET', slide["cover"])
+                with open(image_name, 'wb') as f:
+                    f.write(response.data)
+                if index in self.problems_dict.keys():
+                    img = Image.open(image_name)
+                    font = ImageFont.truetype(
+                        "C:\\Windows\\Fonts\\msyh.ttc", 30)
+                    draw = ImageDraw.Draw(img)
+                    draw.text((50, 50), str(self.problems_dict[index]), fill=(
+                        255, 0, 0), font=font)
+                    img.save(image_name)
+                    print(index, self.problems_dict[index])
                 pdf.image(name=image_name, x=0, y=0,
                           w=data["width"], h=data["height"])
             pdf.output(downloadpath+"\\"+data["title"]+".pdf")
@@ -99,6 +96,8 @@ class Lesson:
                   if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
+        for i in range(len(problems)):
+            problems[i]["index"] = index[i]
         return problems
 
     def answer_questions(self, problemid, problemtype, answer, limit):
@@ -169,8 +168,10 @@ class Lesson:
             if current_presentation not in presentations:
                 presentations.append(current_presentation)
             for presentationid in presentations:
-                self.download_ppt(presentationid)
                 self.problems_ls.extend(self.get_problems(presentationid))
+                for problem in self.problems_ls:
+                    self.problems_dict[problem["index"]] = problem["answers"]
+                self.download_ppt(presentationid)
             self.unlocked_problem = data["unlockedproblem"]
             for problemid in self.unlocked_problem:
                 self._current_problem(wsapp, problemid)
@@ -182,11 +183,15 @@ class Lesson:
             self.add_message(meg, 7)
             wsapp.close()
         elif op == "presentationupdated":
-            self.download_ppt(data["presentation"])
             self.problems_ls.extend(self.get_problems(data["presentation"]))
+            for problem in self.problems_ls:
+                self.problems_dict[problem["index"]] = problem["answers"]
+            self.download_ppt(data["presentation"])
         elif op == "presentationcreated":
-            self.download_ppt(data["presentation"])
             self.problems_ls.extend(self.get_problems(data["presentation"]))
+            for problem in self.problems_ls:
+                self.problems_dict[problem["index"]] = problem["answers"]
+            self.download_ppt(data["presentation"])
         elif op == "newdanmu" and self.config["auto_danmu"]:
             current_content = data["danmu"].lower()
             uid = data["userid"]

@@ -6,3 +6,4 @@ websocket_client
 fpdf
 numpy
 deepdiff
+Pillow
