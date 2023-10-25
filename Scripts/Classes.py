@@ -3,7 +3,6 @@ import os
 import random
 import threading
 import time
-from tkinter import font
 
 import requests
 import urllib3
