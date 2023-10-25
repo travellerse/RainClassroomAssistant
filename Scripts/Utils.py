@@ -14,6 +14,21 @@ from numpy import random
 lock = threading.Lock()
 
 
+def is_debug():
+    # 判断是否为debug模式
+    return True if sys.gettrace() else False
+
+
+def get_version():
+    info = win32api.GetFileVersionInfo(win32api.GetModuleFileName(
+        win32api.GetModuleHandle(None)), '\\')  # 获取文件版本信息
+    ms = info['FileVersionMS']
+    ls = info['FileVersionLS']
+    version = '%d.%d.%d' % (win32api.HIWORD(
+        ms), win32api.LOWORD(ms), win32api.HIWORD(ls))
+    return version  # 获取文件版本号
+
+
 def say_something(text):
     # 带线程锁的语音函数
     lock.acquire()
