@@ -70,7 +70,7 @@ class Lesson:
                     draw.text((50, 50), str(self.problems_dict[index]), fill=(
                         255, 0, 0), font=font)
                     img.save(image_name)
-                    print(index, self.problems_dict[index])
+                    # print(index, self.problems_dict[index])
                 pdf.image(name=image_name, x=0, y=0,
                           w=data["width"], h=data["height"])
             pdf_name = data["title"]+".pdf"
