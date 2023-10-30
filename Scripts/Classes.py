@@ -73,14 +73,15 @@ class Lesson:
                     print(index, self.problems_dict[index])
                 pdf.image(name=image_name, x=0, y=0,
                           w=data["width"], h=data["height"])
-            if os.path.exists(downloadpath+"\\"+data["title"]+".pdf"):
-                pdf.output(downloadpath+"\\"+data["title"]+".pdf")
-            else:
-                pdf.output(downloadpath+"\\" +
-                           data["title"]+str(time.time)+".pdf")
-            self.add_message(data["title"]+".pdf"+" 下载完成", 0)
+            pdf_name = data["title"]+".pdf"
+            if os.path.exists(downloadpath+"\\"+pdf_name):
+                time_info = time.strftime(
+                    "%Y%m%d_%H%M%S", time.localtime())
+                pdf_name = data["title"]+str(time_info)+".pdf"
+            pdf.output(downloadpath+"\\"+pdf_name)
+            self.add_message(f"{pdf_name} 下载完成", 0)
         except:
-            self.add_message(data["title"]+".pdf"+" 下载失败。考虑使用管理员权限启动", 0)
+            self.add_message(f"{pdf_name} 下载失败。考虑使用管理员权限启动", 0)
 
     def download_ppt(self, presentationid):
         threading.Thread(target=self._download, args=(
