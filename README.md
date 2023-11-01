@@ -1,4 +1,6 @@
 # RainClassroomAssitant
+## notice
+此版本将进入维护状态，敬请期待重构后的新版本
 ## 原库https://github.com/TrickyDeath/RainClassroomAssitant
 &emsp;&emsp;基于Python的雨课堂线上课划水小助手。
 ## 介绍
