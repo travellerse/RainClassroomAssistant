@@ -98,7 +98,7 @@ def calculate_waittime(limit, type, custom_percent=50):
     elif type == 2:
         wait_time = rand_poisson(lam(limit, 35))
     elif type == 3:
-        wait_time = rand_poisson(lam(limit, 85))
+        wait_time = limit*0.2+rand_poisson(lam(limit, 85))*0.8
     elif type == 4:
         wait_time = rand_poisson(lam(limit, custom_percent))
     if wait_time > limit:

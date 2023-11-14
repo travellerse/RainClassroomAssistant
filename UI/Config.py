@@ -416,7 +416,7 @@ class Config_Ui(object):
         self.delay_time_radio_2.setText(
             _translate("Dialog", "激进（于收到题目前30%秒内随机决定时间）"))
         self.delay_time_radio_3.setText(
-            _translate("Dialog", "保守（于收到题目前70%秒内随机决定时间）"))
+            _translate("Dialog", "保守（于收到题目前20%~70%秒内随机决定时间）"))
         self.delay_time_radio_4.setText(
             _translate("Dialog", "自定义（于收到题目前n%秒内随机决定时间）"))
         self.label_2.setText(_translate(
