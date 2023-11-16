@@ -7,3 +7,4 @@ fpdf
 numpy
 deepdiff
 Pillow
+win10toast

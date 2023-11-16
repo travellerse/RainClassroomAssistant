@@ -43,9 +43,6 @@ class Config_Ui(object):
             self.sign_config)
         self.verticalLayout_sign_config.setObjectName(
             "verticalLayout_sign_config")
-        self.delay_sign_on = QtWidgets.QCheckBox(self.sign_config)
-        self.delay_sign_on.setObjectName("delay_sign_on")
-        self.verticalLayout_sign_config.addWidget(self.delay_sign_on)
         self.when_delay_on = QtWidgets.QWidget(self.sign_config)
         self.when_delay_on.setEnabled(True)
         self.when_delay_on.setObjectName("when_delay_on")
@@ -237,7 +234,6 @@ class Config_Ui(object):
 
         # 动作绑定
         self.cancel.clicked.connect(Dialog.reject)
-        self.delay_sign_on.stateChanged.connect(self.enable_sign_config)
         self.delay_time_radio.clicked.connect(self.enable_delay_sign_custom)
         self.no_delay_radio.clicked.connect(self.enable_delay_sign_custom)
         self.danmu_on.stateChanged.connect(self.enable_danmu_config)
@@ -252,13 +248,6 @@ class Config_Ui(object):
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-    def enable_sign_config(self):
-        # 启用自动签到详细配置Widget
-        if self.delay_sign_on.isChecked():
-            self.when_delay_on.setEnabled(True)
-        else:
-            self.when_delay_on.setEnabled(False)
 
     def enable_danmu_config(self):
         # 启用自动弹幕详细配置Widget
@@ -297,11 +286,7 @@ class Config_Ui(object):
 
     def load_config(self, config):
         # 签到配置
-        self.delay_sign_on.setChecked(config["sign_delay"])
-        if self.delay_sign_on.isChecked():
-            self.when_delay_on.setEnabled(True)
-        else:
-            self.when_delay_on.setEnabled(False)
+        self.when_delay_on.setEnabled(True)
         if config["sign_config"]["delay_time"]["type"] == 1:
             self.delay_time_radio.setChecked(True)
             self.when_delay_time.setEnabled(True)
@@ -348,7 +333,6 @@ class Config_Ui(object):
     def save_config(self, dialog):
         config = self.dialog_config
         # 签到配置
-        config["sign_delay"] = self.delay_sign_on.isChecked()
         if self.delay_time_radio.isChecked():
             config["sign_config"]["delay_time"]["type"] = 1
         elif self.no_delay_radio.isChecked():
@@ -388,7 +372,6 @@ class Config_Ui(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "配置"))
         self.sign_config.setTitle(_translate("Dialog", "签到配置"))
-        self.delay_sign_on.setText(_translate("Dialog", "启用延时签到"))
         self.label_9.setText(_translate("Dialog", "签到延迟时长"))
         self.delay_time_radio.setText(
             _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）"))
