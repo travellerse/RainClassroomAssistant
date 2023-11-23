@@ -71,11 +71,6 @@ def monitor(main_ui):
                 thread = threading.Thread(
                     target=lesson_obj.start_lesson, args=(delay_time, del_onclass,), daemon=True)
                 thread.start()
-                if delay_time == 0:
-                    meg = f"检测到课程{lessonname}正在上课，已加入监听列表"
-                else:
-                    meg = f"检测到课程{lessonname}正在上课，将于{delay_time}秒后加入监听列表"
-                main_ui.add_message_signal.emit(meg, 7)
                 on_lesson_list.append(lesson_obj)
 
         # for lesson in lesson_list_old:

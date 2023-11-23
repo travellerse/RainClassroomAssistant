@@ -149,7 +149,8 @@ def get_initial_data():
                 "delay_time": {
                     "type": 1,
                     "custom": {
-                        "time": 20
+                        "time": 20,
+                        "cutoff": 120
                     }
                 }
             }

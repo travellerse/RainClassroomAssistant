@@ -290,8 +290,8 @@ class MainWindow_Ui(QtCore.QObject):
         if status and success:
             self.add_message_signal.emit("登录成功，当前登录用户："+user_info["name"], 0)
             self.login_btn.setText("重新登录")
-        if not status:
-            self.show_login(rtn_message="登录失败，请重新登录")
+        if not status and not _bool:
+            self.show_login(_bool=True, rtn_message="登录失败，请重新登录")
 
     def check_config(self, dir_route, config_route):
         # 检查配置文件

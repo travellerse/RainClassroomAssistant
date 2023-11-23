@@ -67,8 +67,16 @@ class Config_Ui(object):
         self.verticalLayout_when_delay_time.setObjectName(
             "verticalLayout_when_delay_time")
         self.delay_time_input = QtWidgets.QSpinBox(self.when_delay_time)
+        self.delay_time_input.setMaximum(32767)
         self.delay_time_input.setObjectName("delay_time_input")
         self.verticalLayout_when_delay_time.addWidget(self.delay_time_input)
+        self.label_10 = QtWidgets.QLabel(self.when_delay_time)
+        self.label_10.setObjectName("label_10")
+        self.verticalLayout_when_delay_time.addWidget(self.label_10)
+        self.cutoff_time_input = QtWidgets.QSpinBox(self.when_delay_on)
+        self.cutoff_time_input.setMaximum(32767)
+        self.cutoff_time_input.setObjectName("cutoff_time_input")
+        self.verticalLayout_when_delay_time.addWidget(self.cutoff_time_input)
         self.verticalLayout_when_delay_on.addWidget(self.when_delay_time)
 
         self.no_delay_radio = QtWidgets.QRadioButton(self.when_delay_on)
@@ -295,6 +303,8 @@ class Config_Ui(object):
             self.when_delay_time.setEnabled(False)
         self.delay_time_input.setValue(
             config["sign_config"]["delay_time"]["custom"]["time"])
+        self.cutoff_time_input.setValue(
+            config["sign_config"]["delay_time"]["custom"]["cutoff"])
         # 弹幕配置
         self.danmu_on.setChecked(config["auto_danmu"])
         self.danmu_spinBox.setValue(config["danmu_config"]["danmu_limit"])
@@ -338,6 +348,7 @@ class Config_Ui(object):
         elif self.no_delay_radio.isChecked():
             config["sign_config"]["delay_time"]["type"] = 2
         config["sign_config"]["delay_time"]["custom"]["time"] = self.delay_time_input.value()
+        config["sign_config"]["delay_time"]["custom"]["cutoff"] = self.cutoff_time_input.value()
         # 弹幕配置
         config["auto_danmu"] = self.danmu_on.isChecked()
         config["danmu_config"]["danmu_limit"] = self.danmu_spinBox.value()
@@ -375,6 +386,8 @@ class Config_Ui(object):
         self.label_9.setText(_translate("Dialog", "签到延迟时长"))
         self.delay_time_radio.setText(
             _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）"))
+        self.label_10.setText(
+            _translate("Dialog", "  延迟生效时间点（课程开始前n秒内启用延迟）"))
         self.no_delay_radio.setText(
             _translate("Dialog", "不延时"))
         self.danmu_config.setTitle(_translate("Dialog", "弹幕配置"))

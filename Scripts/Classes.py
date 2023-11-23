@@ -286,7 +286,6 @@ class Lesson:
         wsapp.send(json.dumps(query_problem))
 
     def start_lesson(self, delay, callback):
-        time.sleep(delay)
         self.auth = self.checkin_class()
         rtn = self.get_lesson_info()
         teacher = rtn["teacher"]["name"]
@@ -294,6 +293,13 @@ class Lesson:
         timestamp = rtn["startTime"] // 1000
         time_str = time.strftime(
             "%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
+        if int(time.time())-timestamp <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"] and delay > 0:
+            meg = f"检测到课程{self.lessonname}正在上课，将于{delay}秒后加入监听列表"
+            self.add_message(meg, 7)
+            time.sleep(delay)
+        else:
+            meg = f"检测到课程{self.lessonname}正在上课，已加入监听列表"
+        self.add_message(meg, 7)
         index = self.main_ui.tableWidget.rowCount()
         self.add_course([self.lessonname, title, teacher, time_str], index)
         self.wsapp = websocket.WebSocketApp(
