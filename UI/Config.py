@@ -387,7 +387,7 @@ class Config_Ui(object):
         self.delay_time_radio.setText(
             _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）"))
         self.label_10.setText(
-            _translate("Dialog", "  延迟生效时间点（课程开始前n秒内启用延迟）"))
+            _translate("Dialog", "  延迟生效时间点（课程开始至n秒内启用延迟，n秒后停用延迟）"))
         self.no_delay_radio.setText(
             _translate("Dialog", "不延时"))
         self.danmu_config.setTitle(_translate("Dialog", "弹幕配置"))
