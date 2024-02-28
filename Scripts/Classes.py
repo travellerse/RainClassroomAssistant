@@ -47,7 +47,7 @@ class Lesson:
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
         downloadpath = "downloads"
-        cachepath = downloadpath+"\\rainclasscache\\"+data["title"]
+        cachepath = downloadpath+"\\rainclasscache\\"+data["title"].strip()
         try:
             if not os.path.exists(downloadpath):
                 os.mkdir(downloadpath)
