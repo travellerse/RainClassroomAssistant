@@ -38,8 +38,7 @@ class MainWindow_Ui(QtCore.QObject):
         MainWindow.resize(800, 700)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: rgb(255, 255, 255);")
-        MainWindow.setWindowIcon(QtGui.QIcon(
-            resource_path("UI\\Image\\favicon.ico")))
+        MainWindow.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
         self.Window = QtWidgets.QWidget(MainWindow)
         self.Window.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.Window.setObjectName("Window")
@@ -55,28 +54,28 @@ class MainWindow_Ui(QtCore.QObject):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label = QtWidgets.QLabel(self.Menu)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setMaximumSize(QtCore.QSize(32, 32))
-        self.label.setStyleSheet("border-radius:10px;\n"
-                                 "")
+        self.label.setStyleSheet("border-radius:10px;\n" "")
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(
-            resource_path("UI\\Image\\NoRainClassroom.jpg")))
+        self.label.setPixmap(
+            QtGui.QPixmap(resource_path("UI\\Image\\NoRainClassroom.jpg"))
+        )
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.horizontalLayout_3.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.Menu)
-        self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                   "font: 16pt \"黑体\";")
+        self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_3.addWidget(self.label_2)
         spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem)
         self.active_btn = QtWidgets.QPushButton(self.Menu)
         self.active_btn.setMaximumSize(QtCore.QSize(100, 400))
@@ -105,25 +104,25 @@ class MainWindow_Ui(QtCore.QObject):
         self.horizontalLayout_3.setStretch(5, 1)
         self.verticalLayout.addWidget(self.Menu)
         self.Table = QtWidgets.QGroupBox(self.Window)
-        self.Table.setStyleSheet("color: rgb(209, 209, 209);\n"
-                                 "font: 10pt \"微软雅黑\";\n"
-                                 "color: rgb(0, 0, 0);")
+        self.Table.setStyleSheet(
+            "color: rgb(209, 209, 209);\n"
+            'font: 10pt "微软雅黑";\n'
+            "color: rgb(0, 0, 0);"
+        )
         self.Table.setObjectName("Table")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.Table)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.tableWidget = QtWidgets.QTableWidget(self.Table)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.tableWidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy)
-        self.tableWidget.setStyleSheet("font: 9pt \"微软雅黑\";")
-        self.tableWidget.setEditTriggers(
-            QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setStyleSheet('font: 9pt "微软雅黑";')
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(0)
@@ -137,22 +136,27 @@ class MainWindow_Ui(QtCore.QObject):
         self.tableWidget.setHorizontalHeaderItem(3, item)
         self.tableWidget.horizontalHeader().setHighlightSections(False)
         self.tableWidget.horizontalHeader().setSectionResizeMode(
-            QtWidgets.QHeaderView.Stretch)
+            QtWidgets.QHeaderView.Stretch
+        )
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.verticalHeader().setHighlightSections(False)
         self.verticalLayout_3.addWidget(self.tableWidget)
         self.verticalLayout.addWidget(self.Table)
         self.Output = QtWidgets.QGroupBox(self.Window)
-        self.Output.setStyleSheet("color: rgb(209, 209, 209);\n"
-                                  "font: 10pt \"微软雅黑\";\n"
-                                  "color: rgb(0, 0, 0);")
+        self.Output.setStyleSheet(
+            "color: rgb(209, 209, 209);\n"
+            'font: 10pt "微软雅黑";\n'
+            "color: rgb(0, 0, 0);"
+        )
         self.Output.setObjectName("Output")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.Output)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.output_textarea = QtWidgets.QTextBrowser(self.Output)
-        self.output_textarea.setStyleSheet("background-color: rgb(100, 100, 100);\n"
-                                           "color: rgb(255, 255, 255);\n"
-                                           "font: 9pt \"微软雅黑\";")
+        self.output_textarea.setStyleSheet(
+            "background-color: rgb(100, 100, 100);\n"
+            "color: rgb(255, 255, 255);\n"
+            'font: 9pt "微软雅黑";'
+        )
         self.output_textarea.setObjectName("output_textarea")
         self.verticalLayout_2.addWidget(self.output_textarea)
         self.verticalLayout.addWidget(self.Output)
@@ -183,22 +187,26 @@ class MainWindow_Ui(QtCore.QObject):
             self.add_message_signal.emit("当前为Debug模式", 0)
             with open("file_version_info.txt", "r") as f:
                 version_info = f.read()
-            version = re.search(
-                "u'FileVersion', u'.*'", version_info).group().split("'")[3]
+            version = (
+                re.search("u'FileVersion', u'.*'", version_info).group().split("'")[3]
+            )
             self.add_message_signal.emit(f"当前版本：{version}", 0)
             # print(get_version())
         else:
-            self.add_message_signal.emit(
-                "当前版本：" + get_version(), 0)
+            self.add_message_signal.emit("当前版本：" + get_version(), 0)
         self.add_message_signal.emit("初始化完成", 0)
         self.add_message_signal.emit(
-            "注意：本软件不会被用于计算雨课堂在线时长，仅提供一个登陆记录，需要自行打开雨课堂", 0)
+            "注意：本软件不会被用于计算雨课堂在线时长，仅提供一个登陆记录，需要自行打开雨课堂",
+            0,
+        )
 
         # 登录状态检查
         status, user_info = self.check_login()
         if status:
             self.login_btn.setText("重新登录")
-            self.add_message_signal.emit("登录成功，当前登录用户："+user_info["name"], 0)
+            self.add_message_signal.emit(
+                "登录成功，当前登录用户：" + user_info["name"], 0
+            )
         else:
             self.show_login()
 
@@ -288,7 +296,9 @@ class MainWindow_Ui(QtCore.QObject):
         # 再次检测登录状态
         status, user_info = self.check_login()
         if status and success:
-            self.add_message_signal.emit("登录成功，当前登录用户："+user_info["name"], 0)
+            self.add_message_signal.emit(
+                "登录成功，当前登录用户：" + user_info["name"], 0
+            )
             self.login_btn.setText("重新登录")
         if not status and not _bool:
             self.show_login(_bool=True, rtn_message="登录失败，请重新登录")
@@ -312,7 +322,10 @@ class MainWindow_Ui(QtCore.QObject):
                     data = json.load(f)
                     info = DeepDiff(get_initial_data(), data)
                     for key in info:
-                        if key == "dictionary_item_added" or key == "dictionary_item_removed":
+                        if (
+                            key == "dictionary_item_added"
+                            or key == "dictionary_item_removed"
+                        ):
                             raise Exception
                     self.add_message_signal.emit("配置文件已读取", 0)
                     return data
@@ -347,8 +360,7 @@ class MainWindow_Ui(QtCore.QObject):
 
     def active(self):
         # 启动
-        self.monitor_t = threading.Thread(
-            target=monitor, args=(self,), daemon=True)
+        self.monitor_t = threading.Thread(target=monitor, args=(self,), daemon=True)
         self.monitor_t.start()
         self.is_active = True
         self.active_btn.setText("停止监听")
@@ -367,7 +379,7 @@ class MainWindow_Ui(QtCore.QObject):
         self.add_message_signal.emit("停止成功", 0)
 
     def audio(self, message, type):
-        '''
+        """
         type
         0: 默认，未分类音频
         1: 自动发送弹幕成功
@@ -378,22 +390,30 @@ class MainWindow_Ui(QtCore.QObject):
         6: 他人被点名
         7: 课程相关
         8: 网络断开/重连
-        '''
+        """
         # 尝试播放语音提示
         audio_on = self.config["audio_on"]
         if audio_on:
             audio_type = self.config["audio_config"]["audio_type"]
-            if \
-                (type == 1 and audio_type["send_danmu"]) or \
-                (type == 2 and audio_type["others_danmu"]) or \
-                (type == 3 and audio_type["receive_problem"]) or \
-                (type == 4 and audio_type["answer_result"]) or \
-                (type == 5 and audio_type["im_called"]) or \
-                (type == 6 and audio_type["others_called"]) or \
-                (type == 7 and audio_type["course_info"]) or \
-                    (type == 8 and audio_type["network_info"]):
-                threading.Thread(target=say_something, args=(
-                    message,), daemon=True).start()
+            if (
+                (type == 1 and audio_type["send_danmu"])
+                or (type == 2 and audio_type["others_danmu"])
+                or (type == 3 and audio_type["receive_problem"])
+                or (type == 4 and audio_type["answer_result"])
+                or (type == 5 and audio_type["im_called"])
+                or (type == 6 and audio_type["others_called"])
+                or (type == 7 and audio_type["course_info"])
+                or (type == 8 and audio_type["network_info"])
+            ):
+                threading.Thread(
+                    target=say_something, args=(message,), daemon=True
+                ).start()
                 if type == 3:
-                    threading.Thread(target=show_info, args=(
-                        message, "Warn",), daemon=True).start()
+                    threading.Thread(
+                        target=show_info,
+                        args=(
+                            message,
+                            "Warn",
+                        ),
+                        daemon=True,
+                    ).start()

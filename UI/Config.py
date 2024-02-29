@@ -20,36 +20,30 @@ class Config_Ui(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(450, 600)
-        Dialog.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-                             "font: 9pt \"微软雅黑\";")
-        Dialog.setWindowIcon(QtGui.QIcon(
-            resource_path("UI\\Image\\favicon.ico")))
+        Dialog.setStyleSheet(
+            "background-color: rgb(255, 255, 255);\n" 'font: 9pt "微软雅黑";'
+        )
+        Dialog.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.scrollArea = QtWidgets.QScrollArea(Dialog)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(
-            QtCore.QRect(0, -56, 393, 580))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -56, 393, 580))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_12 = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents)
+        self.verticalLayout_12 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
 
         self.sign_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
         self.sign_config.setObjectName("sign_config")
-        self.verticalLayout_sign_config = QtWidgets.QVBoxLayout(
-            self.sign_config)
-        self.verticalLayout_sign_config.setObjectName(
-            "verticalLayout_sign_config")
+        self.verticalLayout_sign_config = QtWidgets.QVBoxLayout(self.sign_config)
+        self.verticalLayout_sign_config.setObjectName("verticalLayout_sign_config")
         self.when_delay_on = QtWidgets.QWidget(self.sign_config)
         self.when_delay_on.setEnabled(True)
         self.when_delay_on.setObjectName("when_delay_on")
-        self.verticalLayout_when_delay_on = QtWidgets.QVBoxLayout(
-            self.when_delay_on)
-        self.verticalLayout_when_delay_on.setObjectName(
-            "verticalLayout_when_delay_on")
+        self.verticalLayout_when_delay_on = QtWidgets.QVBoxLayout(self.when_delay_on)
+        self.verticalLayout_when_delay_on.setObjectName("verticalLayout_when_delay_on")
         self.label_9 = QtWidgets.QLabel(self.when_delay_on)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_when_delay_on.addWidget(self.label_9)
@@ -62,10 +56,12 @@ class Config_Ui(object):
         self.when_delay_time.setEnabled(True)
         self.when_delay_time.setObjectName("when_delay_time")
         self.verticalLayout_when_delay_time = QtWidgets.QVBoxLayout(
-            self.when_delay_time)
+            self.when_delay_time
+        )
         self.verticalLayout_when_delay_time.setContentsMargins(0, 0, 0, 3)
         self.verticalLayout_when_delay_time.setObjectName(
-            "verticalLayout_when_delay_time")
+            "verticalLayout_when_delay_time"
+        )
         self.delay_time_input = QtWidgets.QSpinBox(self.when_delay_time)
         self.delay_time_input.setMaximum(32767)
         self.delay_time_input.setObjectName("delay_time_input")
@@ -251,8 +247,7 @@ class Config_Ui(object):
         self.delay_time_radio_2.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_3.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_4.clicked.connect(self.enable_delay_custom)
-        self.save.clicked.connect(functools.partial(
-            self.save_config, dialog=Dialog))
+        self.save.clicked.connect(functools.partial(self.save_config, dialog=Dialog))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -302,30 +297,32 @@ class Config_Ui(object):
             self.no_delay_radio.setChecked(True)
             self.when_delay_time.setEnabled(False)
         self.delay_time_input.setValue(
-            config["sign_config"]["delay_time"]["custom"]["time"])
+            config["sign_config"]["delay_time"]["custom"]["time"]
+        )
         self.cutoff_time_input.setValue(
-            config["sign_config"]["delay_time"]["custom"]["cutoff"])
+            config["sign_config"]["delay_time"]["custom"]["cutoff"]
+        )
         # 弹幕配置
         self.danmu_on.setChecked(config["auto_danmu"])
         self.danmu_spinBox.setValue(config["danmu_config"]["danmu_limit"])
         # 语音配置
         self.audio_on.setChecked(config["audio_on"])
-        self.self_danmu.setChecked(
-            config["audio_config"]["audio_type"]["send_danmu"])
+        self.self_danmu.setChecked(config["audio_config"]["audio_type"]["send_danmu"])
         self.others_danmu.setChecked(
-            config["audio_config"]["audio_type"]["others_danmu"])
+            config["audio_config"]["audio_type"]["others_danmu"]
+        )
         self.receive_problem.setChecked(
-            config["audio_config"]["audio_type"]["receive_problem"])
+            config["audio_config"]["audio_type"]["receive_problem"]
+        )
         self.answer_result.setChecked(
-            config["audio_config"]["audio_type"]["answer_result"])
-        self.self_called.setChecked(
-            config["audio_config"]["audio_type"]["im_called"])
+            config["audio_config"]["audio_type"]["answer_result"]
+        )
+        self.self_called.setChecked(config["audio_config"]["audio_type"]["im_called"])
         self.others_called.setChecked(
-            config["audio_config"]["audio_type"]["others_called"])
-        self.course.setChecked(
-            config["audio_config"]["audio_type"]["course_info"])
-        self.network.setChecked(
-            config["audio_config"]["audio_type"]["network_info"])
+            config["audio_config"]["audio_type"]["others_called"]
+        )
+        self.course.setChecked(config["audio_config"]["audio_type"]["course_info"])
+        self.network.setChecked(config["audio_config"]["audio_type"]["network_info"])
         # 答题配置
         self.answer_on.setChecked(config["auto_answer"])
         if config["answer_config"]["answer_delay"]["type"] == 1:
@@ -337,7 +334,8 @@ class Config_Ui(object):
         elif config["answer_config"]["answer_delay"]["type"] == 4:
             self.delay_time_radio_4.setChecked(True)
         self.delay_time_4_input.setValue(
-            config["answer_config"]["answer_delay"]["custom"]["percent"])
+            config["answer_config"]["answer_delay"]["custom"]["percent"]
+        )
         self.dialog_config = config
 
     def save_config(self, dialog):
@@ -347,19 +345,31 @@ class Config_Ui(object):
             config["sign_config"]["delay_time"]["type"] = 1
         elif self.no_delay_radio.isChecked():
             config["sign_config"]["delay_time"]["type"] = 2
-        config["sign_config"]["delay_time"]["custom"]["time"] = self.delay_time_input.value()
-        config["sign_config"]["delay_time"]["custom"]["cutoff"] = self.cutoff_time_input.value()
+        config["sign_config"]["delay_time"]["custom"][
+            "time"
+        ] = self.delay_time_input.value()
+        config["sign_config"]["delay_time"]["custom"][
+            "cutoff"
+        ] = self.cutoff_time_input.value()
         # 弹幕配置
         config["auto_danmu"] = self.danmu_on.isChecked()
         config["danmu_config"]["danmu_limit"] = self.danmu_spinBox.value()
         # 语音配置
         config["audio_on"] = self.audio_on.isChecked()
         config["audio_config"]["audio_type"]["send_danmu"] = self.self_danmu.isChecked()
-        config["audio_config"]["audio_type"]["others_danmu"] = self.others_danmu.isChecked()
-        config["audio_config"]["audio_type"]["receive_problem"] = self.receive_problem.isChecked()
-        config["audio_config"]["audio_type"]["answer_result"] = self.answer_result.isChecked()
+        config["audio_config"]["audio_type"][
+            "others_danmu"
+        ] = self.others_danmu.isChecked()
+        config["audio_config"]["audio_type"][
+            "receive_problem"
+        ] = self.receive_problem.isChecked()
+        config["audio_config"]["audio_type"][
+            "answer_result"
+        ] = self.answer_result.isChecked()
         config["audio_config"]["audio_type"]["im_called"] = self.self_called.isChecked()
-        config["audio_config"]["audio_type"]["others_called"] = self.others_called.isChecked()
+        config["audio_config"]["audio_type"][
+            "others_called"
+        ] = self.others_called.isChecked()
         config["audio_config"]["audio_type"]["course_info"] = self.course.isChecked()
         config["audio_config"]["audio_type"]["network_info"] = self.network.isChecked()
         # 答题配置
@@ -372,7 +382,9 @@ class Config_Ui(object):
             config["answer_config"]["answer_delay"]["type"] = 3
         elif self.delay_time_radio_4.isChecked():
             config["answer_config"]["answer_delay"]["type"] = 4
-        config["answer_config"]["answer_delay"]["custom"]["percent"] = self.delay_time_4_input.value()
+        config["answer_config"]["answer_delay"]["custom"][
+            "percent"
+        ] = self.delay_time_4_input.value()
         # 保存
         config_path = get_config_path()
         with open(config_path, "w+") as f:
@@ -385,14 +397,21 @@ class Config_Ui(object):
         self.sign_config.setTitle(_translate("Dialog", "签到配置"))
         self.label_9.setText(_translate("Dialog", "签到延迟时长"))
         self.delay_time_radio.setText(
-            _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）"))
+            _translate("Dialog", "自定义（于10~n秒内随机决定时间签到）")
+        )
         self.label_10.setText(
-            _translate("Dialog", "  延迟生效时间点（课程开始至n秒内启用延迟，n秒后停用延迟）"))
-        self.no_delay_radio.setText(
-            _translate("Dialog", "不延时"))
+            _translate(
+                "Dialog", "  延迟生效时间点（课程开始至n秒内启用延迟，n秒后停用延迟）"
+            )
+        )
+        self.no_delay_radio.setText(_translate("Dialog", "不延时"))
         self.danmu_config.setTitle(_translate("Dialog", "弹幕配置"))
         self.danmu_on.setText(_translate("Dialog", "启用自动发送弹幕"))
-        self.label.setText(_translate("Dialog", "自动弹幕阈值（每分钟内收到n条弹幕后自动发送相同弹幕）"))
+        self.label.setText(
+            _translate(
+                "Dialog", "自动弹幕阈值（每分钟内收到n条弹幕后自动发送相同弹幕）"
+            )
+        )
         self.audio_config.setTitle(_translate("Dialog", "语音配置"))
         self.audio_on.setText(_translate("Dialog", "启用语音提醒"))
         self.label_4.setText(_translate("Dialog", "需要语音提醒的内容"))
@@ -408,14 +427,22 @@ class Config_Ui(object):
         self.answer_on.setText(_translate("Dialog", "启用自动答题"))
         self.label_3.setText(_translate("Dialog", "答题延迟时长"))
         self.delay_time_radio_1.setText(
-            _translate("Dialog", "中庸（于收到题目前50%秒内随机决定时间）"))
+            _translate("Dialog", "中庸（于收到题目前50%秒内随机决定时间）")
+        )
         self.delay_time_radio_2.setText(
-            _translate("Dialog", "激进（于收到题目前30%秒内随机决定时间）"))
+            _translate("Dialog", "激进（于收到题目前30%秒内随机决定时间）")
+        )
         self.delay_time_radio_3.setText(
-            _translate("Dialog", "保守（于收到题目前20%~70%秒内随机决定时间）"))
+            _translate("Dialog", "保守（于收到题目前20%~70%秒内随机决定时间）")
+        )
         self.delay_time_radio_4.setText(
-            _translate("Dialog", "自定义（于收到题目前n%秒内随机决定时间）"))
-        self.label_2.setText(_translate(
-            "Dialog", "注：如果您采用自定义延迟时长，当延迟时长大于题目所给时限时，将按照系统默认算法重新计算延迟时长。"))
+            _translate("Dialog", "自定义（于收到题目前n%秒内随机决定时间）")
+        )
+        self.label_2.setText(
+            _translate(
+                "Dialog",
+                "注：如果您采用自定义延迟时长，当延迟时长大于题目所给时限时，将按照系统默认算法重新计算延迟时长。",
+            )
+        )
         self.save.setText(_translate("Dialog", "保存"))
         self.cancel.setText(_translate("Dialog", "取消"))

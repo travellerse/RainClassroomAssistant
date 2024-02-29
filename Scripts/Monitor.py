@@ -64,12 +64,25 @@ def monitor(main_ui):
             lesson_obj = Lesson(lessionid, lessonname, classroomid, main_ui)
             if lesson_obj not in on_lesson_list:
                 if main_ui.config["sign_config"]["delay_time"]["type"] == 1:
-                    delay_time = random.randint(10, max(10, main_ui.config["sign_config"]
-                                                ["delay_time"]["custom"]["time"]))
+                    delay_time = random.randint(
+                        10,
+                        max(
+                            10,
+                            main_ui.config["sign_config"]["delay_time"]["custom"][
+                                "time"
+                            ],
+                        ),
+                    )
                 else:
                     delay_time = 0
                 thread = threading.Thread(
-                    target=lesson_obj.start_lesson, args=(delay_time, del_onclass,), daemon=True)
+                    target=lesson_obj.start_lesson,
+                    args=(
+                        delay_time,
+                        del_onclass,
+                    ),
+                    daemon=True,
+                )
                 thread.start()
                 on_lesson_list.append(lesson_obj)
 

@@ -16,6 +16,7 @@ import json
 import threading
 import time
 
+
 class Login_Ui(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -32,14 +33,12 @@ class Login_Ui(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.label.setStyleSheet("color: rgb(0, 0, 0);\n"
-"font: 16pt \"微软雅黑\";")
+        self.label.setStyleSheet("color: rgb(0, 0, 0);\n" 'font: 16pt "微软雅黑";')
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.widget)
-        self.label_2.setStyleSheet("font: 8pt \"微软雅黑\";\n"
-"color: rgb(255, 0, 0);")
+        self.label_2.setStyleSheet('font: 8pt "微软雅黑";\n' "color: rgb(255, 0, 0);")
         self.label_2.setTextFormat(QtCore.Qt.AutoText)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setWordWrap(True)
@@ -49,7 +48,9 @@ class Login_Ui(object):
         self.verticalLayout_2.setStretch(1, 1)
         self.verticalLayout.addWidget(self.widget)
         self.widget_2 = QtWidgets.QWidget(Dialog)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_2.sizePolicy().hasHeightForWidth())
@@ -60,7 +61,9 @@ class Login_Ui(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.QRcode = QtWidgets.QLabel(self.widget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.QRcode.sizePolicy().hasHeightForWidth())
@@ -98,7 +101,13 @@ class Login_Ui(object):
         while self.flush_on:
             if count == 60:
                 count = 0
-                data={"op":"requestlogin","role":"web","version":1.4,"type":"qrcode","from":"web"}
+                data = {
+                    "op": "requestlogin",
+                    "role": "web",
+                    "version": 1.4,
+                    "type": "qrcode",
+                    "from": "web",
+                }
                 self.wsapp.send(json.dumps(data))
             else:
                 time.sleep(1)
@@ -119,12 +128,18 @@ class Login_Ui(object):
         config = self.config
         config["sessionid"] = sessionid
         config_path = get_config_path()
-        with open(config_path,"w+") as f:
+        with open(config_path, "w+") as f:
             json.dump(config, f)
 
     def start_wssapp(self, Dialog):
         def on_open(wsapp):
-            data={"op":"requestlogin","role":"web","version":1.4,"type":"qrcode","from":"web"}
+            data = {
+                "op": "requestlogin",
+                "role": "web",
+                "version": 1.4,
+                "type": "qrcode",
+                "from": "web",
+            }
             wsapp.send(json.dumps(data))
 
         def on_close(wsapp):
@@ -134,39 +149,50 @@ class Login_Ui(object):
             data = dict_result(message)
             # 二维码刷新
             if data["op"] == "requestlogin":
-                img = requests.get(url=data["ticket"],proxies={"http": None,"https":None}).content
+                img = requests.get(
+                    url=data["ticket"], proxies={"http": None, "https": None}
+                ).content
                 img_pixmap = QtGui.QPixmap()
                 img_pixmap.loadFromData(img)
                 self.QRcode.setPixmap(img_pixmap)
             # 扫码且登录成功
             elif data["op"] == "loginsuccess":
                 web_login_url = "https://pro.yuketang.cn/pc/web_login"
-                login_data = {
-                    "UserID":data["UserID"],
-                    "Auth":data["Auth"]
-                }
+                login_data = {"UserID": data["UserID"], "Auth": data["Auth"]}
                 headers = {
-                    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0"
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0"
                 }
                 login_data = json.dumps(login_data)
                 # 使用Auth和UserID正式登录获取sessionid
-                r = requests.post(url=web_login_url,data=login_data,headers=headers,proxies={"http": None,"https":None})
+                r = requests.post(
+                    url=web_login_url,
+                    data=login_data,
+                    headers=headers,
+                    proxies={"http": None, "https": None},
+                )
                 sessionid = dict(r.cookies)["sessionid"]
                 config = self.config
                 config["sessionid"] = sessionid
                 self.save(sessionid)
                 Dialog.accept()
+
         login_wss_url = "wss://pro.yuketang.cn/wsapp/"
         # 开启websocket线程和定时刷新二维码线程
-        self.wsapp = websocket.WebSocketApp(url=login_wss_url,on_open=on_open,on_message=on_message,on_close=on_close)
-        self.wsapp_t = threading.Thread(target=self.wsapp.run_forever,daemon=True)
+        self.wsapp = websocket.WebSocketApp(
+            url=login_wss_url, on_open=on_open, on_message=on_message, on_close=on_close
+        )
+        self.wsapp_t = threading.Thread(target=self.wsapp.run_forever, daemon=True)
         self.wsapp_t.start()
         self.flush_on = True
-        self.flush_t = threading.Thread(target=self._flush_login_QRcode,daemon=True)
+        self.flush_t = threading.Thread(target=self._flush_login_QRcode, daemon=True)
         self.flush_t.start()
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "登录"))
         self.label.setText(_translate("Dialog", "微信扫码登录雨课堂"))
-        self.label_2.setText(_translate("Dialog", "注：扫码登录仅用于获取您的登录状态以便软件监听雨课堂信息。"))
+        self.label_2.setText(
+            _translate(
+                "Dialog", "注：扫码登录仅用于获取您的登录状态以便软件监听雨课堂信息。"
+            )
+        )
