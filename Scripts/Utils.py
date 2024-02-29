@@ -43,7 +43,9 @@ def say_something(text):
 
 
 def show_info(text, title):
-    toaster.show_toast(title, text, icon_path="UI\Image\favicon.ico", duration=15)
+    toaster.show_toast(
+        title, text, icon_path=r"UI\Image\favicon.ico", duration=15, threaded=True
+    )
     win32api.MessageBox(0, text, title, win32con.MB_OK)
 
 
@@ -226,7 +228,7 @@ if __name__ == "__main__":
     lamb = lam(limit, percent)
     print(f"lam = {lamb}")
     _max = 0
-    for i in range(100000):
+    for i in range(100):
         x.append(calculate_waittime(limit, _type, percent))
         if x[i] > _max:
             _max = x[i]
