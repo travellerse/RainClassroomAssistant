@@ -66,7 +66,8 @@ class Lesson:
                     f.write(response.data)
                 if index in self.problems_dict.keys():
                     img = Image.open(image_name)
-                    font = ImageFont.truetype("C:\\Windows\\Fonts\\msyh.ttc", 30)
+                    font = ImageFont.truetype(
+                        "C:\\Windows\\Fonts\\msyh.ttc", 30)
                     draw = ImageDraw.Draw(img)
                     draw.text(
                         (50, 50),
@@ -76,7 +77,8 @@ class Lesson:
                     )
                     img.save(image_name)
                     # print(index, self.problems_dict[index])
-                pdf.image(name=image_name, x=0, y=0, w=data["width"], h=data["height"])
+                pdf.image(name=image_name, x=0, y=0,
+                          w=data["width"], h=data["height"])
             pdf_name = data["title"] + ".pdf"
             if os.path.exists(downloadpath + "\\" + pdf_name):
                 time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
@@ -104,7 +106,8 @@ class Lesson:
     def get_problems(self, presentationid):
         # 获取课程ppt中的题目
         data = self._get_ppt(presentationid)
-        slides = [problem for problem in data["slides"] if "problem" in problem.keys()]
+        slides = [problem for problem in data["slides"]
+                  if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
         for i in range(len(problems)):
@@ -335,7 +338,8 @@ class Lesson:
                     answers = promble.get("answers", [])
                 threading.Thread(
                     target=self.answer_questions,
-                    args=(promble["problemId"], promble["problemType"], answers, limit),
+                    args=(promble["problemId"],
+                          promble["problemType"], answers, limit),
                 ).start()
                 break
         else:
@@ -367,7 +371,8 @@ class Lesson:
         teacher = rtn["teacher"]["name"]
         title = rtn["title"]
         timestamp = rtn["startTime"] // 1000
-        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
+        time_str = time.strftime(
+            "%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
         if (
             int(time.time()) - timestamp
             <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"]
@@ -422,7 +427,8 @@ class Lesson:
     def get_lesson_info(self):
         url = "https://pro.yuketang.cn/api/v3/lesson/basic-info"
         r = requests.get(
-            url=url, headers=self.headers, proxies={"http": None, "https": None}
+            url=url, headers=self.headers, proxies={
+                "http": None, "https": None}
         )
         return dict_result(r.text)["data"]
 

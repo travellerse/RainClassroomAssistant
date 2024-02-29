@@ -38,7 +38,8 @@ class MainWindow_Ui(QtCore.QObject):
         MainWindow.resize(800, 700)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: rgb(255, 255, 255);")
-        MainWindow.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
+        MainWindow.setWindowIcon(QtGui.QIcon(
+            resource_path("UI\\Image\\favicon.ico")))
         self.Window = QtWidgets.QWidget(MainWindow)
         self.Window.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.Window.setObjectName("Window")
@@ -58,7 +59,8 @@ class MainWindow_Ui(QtCore.QObject):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setMaximumSize(QtCore.QSize(32, 32))
         self.label.setStyleSheet("border-radius:10px;\n" "")
@@ -70,7 +72,8 @@ class MainWindow_Ui(QtCore.QObject):
         self.label.setObjectName("label")
         self.horizontalLayout_3.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.Menu)
-        self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
+        self.label_2.setStyleSheet(
+            "color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_3.addWidget(self.label_2)
         spacerItem = QtWidgets.QSpacerItem(
@@ -118,11 +121,14 @@ class MainWindow_Ui(QtCore.QObject):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy)
         self.tableWidget.setStyleSheet('font: 9pt "微软雅黑";')
-        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(0)
@@ -188,7 +194,8 @@ class MainWindow_Ui(QtCore.QObject):
             with open("file_version_info.txt", "r") as f:
                 version_info = f.read()
             version = (
-                re.search("u'FileVersion', u'.*'", version_info).group().split("'")[3]
+                re.search("u'FileVersion', u'.*'",
+                          version_info).group().split("'")[3]
             )
             self.add_message_signal.emit(f"当前版本：{version}", 0)
             # print(get_version())
@@ -360,7 +367,8 @@ class MainWindow_Ui(QtCore.QObject):
 
     def active(self):
         # 启动
-        self.monitor_t = threading.Thread(target=monitor, args=(self,), daemon=True)
+        self.monitor_t = threading.Thread(
+            target=monitor, args=(self,), daemon=True)
         self.monitor_t.start()
         self.is_active = True
         self.active_btn.setText("停止监听")

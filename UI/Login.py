@@ -22,7 +22,8 @@ class Login_Ui(object):
         Dialog.setObjectName("Dialog")
         Dialog.resize(350, 500)
         Dialog.setStyleSheet("background-color: rgb(255, 255, 255);")
-        Dialog.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
+        Dialog.setWindowIcon(QtGui.QIcon(
+            resource_path("UI\\Image\\favicon.ico")))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.widget = QtWidgets.QWidget(Dialog)
@@ -38,7 +39,8 @@ class Login_Ui(object):
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.widget)
-        self.label_2.setStyleSheet('font: 8pt "微软雅黑";\n' "color: rgb(255, 0, 0);")
+        self.label_2.setStyleSheet(
+            'font: 8pt "微软雅黑";\n' "color: rgb(255, 0, 0);")
         self.label_2.setTextFormat(QtCore.Qt.AutoText)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setWordWrap(True)
@@ -53,7 +55,8 @@ class Login_Ui(object):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.widget_2.sizePolicy().hasHeightForWidth())
         self.widget_2.setSizePolicy(sizePolicy)
         self.widget_2.setObjectName("widget_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget_2)
@@ -66,7 +69,8 @@ class Login_Ui(object):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.QRcode.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.QRcode.sizePolicy().hasHeightForWidth())
         self.QRcode.setSizePolicy(sizePolicy)
         self.QRcode.setMaximumSize(QtCore.QSize(256, 256))
         self.QRcode.setText("")
@@ -181,10 +185,12 @@ class Login_Ui(object):
         self.wsapp = websocket.WebSocketApp(
             url=login_wss_url, on_open=on_open, on_message=on_message, on_close=on_close
         )
-        self.wsapp_t = threading.Thread(target=self.wsapp.run_forever, daemon=True)
+        self.wsapp_t = threading.Thread(
+            target=self.wsapp.run_forever, daemon=True)
         self.wsapp_t.start()
         self.flush_on = True
-        self.flush_t = threading.Thread(target=self._flush_login_QRcode, daemon=True)
+        self.flush_t = threading.Thread(
+            target=self._flush_login_QRcode, daemon=True)
         self.flush_t.start()
 
     def retranslateUi(self, Dialog):
