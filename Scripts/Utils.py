@@ -39,11 +39,11 @@ def say_something(text):
 
 
 def show_info(text, title):
-    win32api.MessageBox(0, text, title, win32con.MB_OK)
     toaster.show_toast(title,
                        text,
                        icon_path="UI\Image\favicon.ico",
                        duration=15)
+    win32api.MessageBox(0, text, title, win32con.MB_OK)
 
 
 def dict_result(text):
@@ -99,6 +99,8 @@ def calculate_waittime(limit, type, custom_percent=50):
     3: 保守
     4: 自定义
     '''
+    if limit == -1:
+        limit = 60
     if type == 1:
         wait_time = rand_poisson(lam(limit, 65))
     elif type == 2:

@@ -10,7 +10,7 @@ import websocket
 from fpdf import FPDF
 from PIL import Image, ImageDraw, ImageFont
 
-from Scripts.Utils import calculate_waittime, dict_result, get_user_info
+from Scripts.Utils import calculate_waittime, dict_result, get_user_info, is_debug
 
 wss_url = "wss://pro.yuketang.cn/wsapp/"
 
@@ -43,61 +43,68 @@ class Lesson:
 
     def _download(self, data):
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
-        self.add_message("开始下载ppt : "+data["title"]+".pdf", 0)
+        self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
         downloadpath = "downloads"
-        cachepath = downloadpath+"\\rainclasscache\\"+data["title"].strip()
+        cachepath = downloadpath + "\\rainclasscache\\" + data["title"].strip()
         try:
             if not os.path.exists(downloadpath):
                 os.mkdir(downloadpath)
-            if not os.path.exists(downloadpath+"\\rainclasscache"):
-                os.mkdir(downloadpath+"\\rainclasscache")
+            if not os.path.exists(downloadpath + "\\rainclasscache"):
+                os.mkdir(downloadpath + "\\rainclasscache")
             if not os.path.exists(cachepath):
                 os.mkdir(cachepath)
             for slide in data["slides"]:
+                if slide["cover"] == "":
+                    continue
                 index = slide["index"]
-                image_name = cachepath+"\\"+str(index)+".jpg"
+                image_name = cachepath + "\\" + str(index) + ".jpg"
                 pdf.add_page()
-                response = http.request('GET', slide["cover"])
-                with open(image_name, 'wb') as f:
+                response = http.request("GET", slide["cover"])
+                with open(image_name, "wb") as f:
                     f.write(response.data)
                 if index in self.problems_dict.keys():
                     img = Image.open(image_name)
-                    font = ImageFont.truetype(
-                        "C:\\Windows\\Fonts\\msyh.ttc", 30)
+                    font = ImageFont.truetype("C:\\Windows\\Fonts\\msyh.ttc", 30)
                     draw = ImageDraw.Draw(img)
-                    draw.text((50, 50), str(self.problems_dict[index]), fill=(
-                        255, 0, 0), font=font)
+                    draw.text(
+                        (50, 50),
+                        str(self.problems_dict[index]),
+                        fill=(255, 0, 0),
+                        font=font,
+                    )
                     img.save(image_name)
                     # print(index, self.problems_dict[index])
-                pdf.image(name=image_name, x=0, y=0,
-                          w=data["width"], h=data["height"])
-            pdf_name = data["title"]+".pdf"
-            if os.path.exists(downloadpath+"\\"+pdf_name):
-                time_info = time.strftime(
-                    "%Y%m%d_%H%M%S", time.localtime())
-                pdf_name = data["title"]+str(time_info)+".pdf"
-            pdf.output(downloadpath+"\\"+pdf_name)
+                pdf.image(name=image_name, x=0, y=0, w=data["width"], h=data["height"])
+            pdf_name = data["title"] + ".pdf"
+            if os.path.exists(downloadpath + "\\" + pdf_name):
+                time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+                pdf_name = data["title"] + str(time_info) + ".pdf"
+            pdf.output(downloadpath + "\\" + pdf_name)
             self.add_message(f"{pdf_name} 下载完成", 0)
         except:
             self.add_message(f"{pdf_name} 下载失败。考虑使用管理员权限启动", 0)
 
     def download_ppt(self, presentationid):
-        threading.Thread(target=self._download, args=(
-            self._get_ppt(presentationid),), daemon=True).start()
+        threading.Thread(
+            target=self._download, args=(self._get_ppt(presentationid),), daemon=True
+        ).start()
 
     def _get_ppt(self, presentationid):
         # 获取课程各页ppt
-        r = requests.get(url="https://pro.yuketang.cn/api/v3/lesson/presentation/fetch?presentation_id=%s" %
-                         (presentationid), headers=self.headers, proxies={"http": None, "https": None})
+        r = requests.get(
+            url="https://pro.yuketang.cn/api/v3/lesson/presentation/fetch?presentation_id=%s"
+            % (presentationid),
+            headers=self.headers,
+            proxies={"http": None, "https": None},
+        )
         return dict_result(r.text)["data"]
 
     def get_problems(self, presentationid):
         # 获取课程ppt中的题目
         data = self._get_ppt(presentationid)
-        slides = [problem for problem in data["slides"]
-                  if "problem" in problem.keys()]
+        slides = [problem for problem in data["slides"] if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
         for i in range(len(problems)):
@@ -108,22 +115,38 @@ class Lesson:
         # 回答问题
         if answer and problemtype != 3:
             wait_time = calculate_waittime(
-                limit, self.config["answer_config"]["answer_delay"]["type"], self.config["answer_config"]["answer_delay"]["custom"]["percent"])
+                limit,
+                self.config["answer_config"]["answer_delay"]["type"],
+                self.config["answer_config"]["answer_delay"]["custom"]["percent"],
+            )
             if wait_time != 0:
                 meg = "%s检测到问题，将在%s秒后自动回答，答案为%s" % (
-                    self.lessonname, wait_time, answer)
+                    self.lessonname,
+                    wait_time,
+                    answer,
+                )
                 # threading.Thread(target=say_something,args=(meg,)).start()
                 self.add_message(meg, 3)
                 time.sleep(wait_time)
             else:
                 meg = "%s检测到问题，剩余时间小于15秒，将立即自动回答，答案为%s" % (
-                    self.lessonname, answer)
+                    self.lessonname,
+                    answer,
+                )
                 self.add_message(meg, 3)
                 # threading.Thread(target=say_something,args=(meg,)).start()
-            data = {"problemId": problemid, "problemType": problemtype,
-                    "dt": int(time.time()), "result": answer}
-            r = requests.post(url="https://pro.yuketang.cn/api/v3/lesson/problem/answer",
-                              headers=self.headers, data=json.dumps(data), proxies={"http": None, "https": None})
+            data = {
+                "problemId": problemid,
+                "problemType": problemtype,
+                "dt": int(time.time()),
+                "result": answer,
+            }
+            r = requests.post(
+                url="https://pro.yuketang.cn/api/v3/lesson/problem/answer",
+                headers=self.headers,
+                data=json.dumps(data),
+                proxies={"http": None, "https": None},
+            )
             return_dict = dict_result(r.text)
             if return_dict["code"] == 0:
                 meg = "%s自动回答成功" % self.lessonname
@@ -132,27 +155,43 @@ class Lesson:
                 return True
             else:
                 meg = "%s自动回答失败，原因：%s" % (
-                    self.lessonname, return_dict["msg"].replace("_", " "))
+                    self.lessonname,
+                    return_dict["msg"].replace("_", " "),
+                )
                 self.add_message(meg, 4)
                 # threading.Thread(target=say_something,args=(meg,)).start()
                 return False
         else:
             if limit == -1:
-                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (self.lessonname)
+                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (
+                    self.lessonname
+                )
             else:
-                meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (self.lessonname, limit)
+                meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (
+                    self.lessonname,
+                    limit,
+                )
             # threading.Thread(target=say_something,args=(meg,)).start()
             self.add_message(meg, 4)
             return False
 
     def on_open(self, wsapp):
-        self.handshark = {"op": "hello", "userid": self.user_uid,
-                          "role": "student", "auth": self.auth, "lessonid": self.lessonid}
+        self.handshark = {
+            "op": "hello",
+            "userid": self.user_uid,
+            "role": "student",
+            "auth": self.auth,
+            "lessonid": self.lessonid,
+        }
         wsapp.send(json.dumps(self.handshark))
 
     def checkin_class(self):
-        r = requests.post(url="https://pro.yuketang.cn/api/v3/lesson/checkin", headers=self.headers,
-                          data=json.dumps({"source": 5, "lessonId": self.lessonid}), proxies={"http": None, "https": None})
+        r = requests.post(
+            url="https://pro.yuketang.cn/api/v3/lesson/checkin",
+            headers=self.headers,
+            data=json.dumps({"source": 5, "lessonId": self.lessonid}),
+            proxies={"http": None, "https": None},
+        )
         set_auth = r.headers.get("Set-Auth", None)
         times = 1
         while not set_auth and times <= 3:
@@ -165,9 +204,19 @@ class Lesson:
     def on_message(self, wsapp, message):
         data = dict_result(message)
         op = data["op"]
+        if is_debug():
+            print(op)
+            self.add_message(op, 0)
         if op == "hello":
             presentations = list(
-                set([slide["pres"] for slide in data["timeline"] if slide["type"] == "slide"]))
+                set(
+                    [
+                        slide["pres"]
+                        for slide in data["timeline"]
+                        if slide["type"] == "slide"
+                    ]
+                )
+            )
             current_presentation = data["presentation"]
             if current_presentation not in presentations:
                 presentations.append(current_presentation)
@@ -204,14 +253,22 @@ class Lesson:
                 for i in self.classmates_ls:
                     if i == sent_danmu_user:
                         meg = "%s课程的%s%s发送了弹幕：%s" % (
-                            self.lessonname, i.sno, i.name, data["danmu"])
+                            self.lessonname,
+                            i.sno,
+                            i.name,
+                            data["danmu"],
+                        )
                         self.add_message(meg, 2)
                         break
             else:
                 self.classmates_ls.append(sent_danmu_user)
                 sent_danmu_user.get_userinfo(self.classroomid, self.headers)
                 meg = "%s课程的%s%s发送了弹幕：%s" % (
-                    self.lessonname, sent_danmu_user.sno, sent_danmu_user.name, data["danmu"])
+                    self.lessonname,
+                    sent_danmu_user.sno,
+                    sent_danmu_user.name,
+                    data["danmu"],
+                )
                 self.add_message(meg, 2)
             now = time.time()
             # 收到一条弹幕，尝试取出其之前的所有记录的列表，取不到则初始化该内容列表
@@ -225,8 +282,14 @@ class Lesson:
                 if now - i > 60:
                     same_content_ls.remove(i)
             # 如果当前的弹幕没被发过，或者已发送时间超过60秒
-            if current_content not in self.sent_danmu_dict.keys() or now - self.sent_danmu_dict[current_content] > 60:
-                if len(same_content_ls) + 1 >= self.config["danmu_config"]["danmu_limit"]:
+            if (
+                current_content not in self.sent_danmu_dict.keys()
+                or now - self.sent_danmu_dict[current_content] > 60
+            ):
+                if (
+                    len(same_content_ls) + 1
+                    >= self.config["danmu_config"]["danmu_limit"]
+                ):
                     self.send_danmu(current_content)
                     same_content_ls = []
                     self.sent_danmu_dict[current_content] = now
@@ -243,7 +306,8 @@ class Lesson:
         elif op == "probleminfo":
             if data["limit"] != -1:
                 time_left = int(
-                    data["limit"]-(int(data["now"]) - int(data["dt"]))/1000)
+                    data["limit"] - (int(data["now"]) - int(data["dt"])) / 1000
+                )
             else:
                 time_left = data["limit"]
             # 筛选未到期题目
@@ -251,8 +315,9 @@ class Lesson:
                 if self.config["auto_answer"]:
                     self.start_answer(data["problemid"], time_left)
                 else:
-                    self.add_message("%s检测到问题，但未开启自动回答" %
-                                     self.lessonname, 3)
+                    self.add_message(
+                        "%s检测到问题，但未开启自动回答" % self.lessonname, 3
+                    )
 
     def start_answer(self, problemid, limit):
         for promble in self.problems_ls:
@@ -268,21 +333,32 @@ class Lesson:
                         answers.append(random.choice(i["answers"]))
                 else:
                     answers = promble.get("answers", [])
-                threading.Thread(target=self.answer_questions, args=(
-                    promble["problemId"], promble["problemType"], answers, limit)).start()
+                threading.Thread(
+                    target=self.answer_questions,
+                    args=(promble["problemId"], promble["problemType"], answers, limit),
+                ).start()
                 break
         else:
             if limit == -1:
-                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (self.lessonname)
+                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (
+                    self.lessonname
+                )
             else:
-                meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (self.lessonname, limit)
+                meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (
+                    self.lessonname,
+                    limit,
+                )
             self.add_message(meg, 4)
             # threading.Thread(target=say_something,args=(meg,)).start()
 
     def _current_problem(self, wsapp, promblemid):
         # 为获取已解锁的问题详情信息，向wsapp发送probleminfo
-        query_problem = {"op": "probleminfo", "lessonid": self.lessonid,
-                         "problemid": promblemid, "msgid": 1}
+        query_problem = {
+            "op": "probleminfo",
+            "lessonid": self.lessonid,
+            "problemid": promblemid,
+            "msgid": 1,
+        }
         wsapp.send(json.dumps(query_problem))
 
     def start_lesson(self, delay, callback):
@@ -291,9 +367,12 @@ class Lesson:
         teacher = rtn["teacher"]["name"]
         title = rtn["title"]
         timestamp = rtn["startTime"] // 1000
-        time_str = time.strftime(
-            "%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
-        if int(time.time())-timestamp <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"] and delay > 0:
+        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
+        if (
+            int(time.time()) - timestamp
+            <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"]
+            and delay > 0
+        ):
             meg = f"检测到课程{self.lessonname}正在上课，将于{delay}秒后加入监听列表"
             self.add_message(meg, 7)
             time.sleep(delay)
@@ -303,7 +382,11 @@ class Lesson:
         index = self.main_ui.tableWidget.rowCount()
         self.add_course([self.lessonname, title, teacher, time_str], index)
         self.wsapp = websocket.WebSocketApp(
-            url=wss_url, header=self.headers, on_open=self.on_open, on_message=self.on_message)
+            url=wss_url,
+            header=self.headers,
+            on_open=self.on_open,
+            on_message=self.on_message,
+        )
         self.wsapp.run_forever()
         meg = "%s监听结束" % self.lessonname
         self.add_message(meg, 7)
@@ -322,10 +405,14 @@ class Lesson:
             "showStatus": True,
             "target": "",
             "userName": "",
-            "wordCloud": True
+            "wordCloud": True,
         }
-        r = requests.post(url=url, headers=self.headers, data=json.dumps(
-            data), proxies={"http": None, "https": None})
+        r = requests.post(
+            url=url,
+            headers=self.headers,
+            data=json.dumps(data),
+            proxies={"http": None, "https": None},
+        )
         if dict_result(r.text)["code"] == 0:
             meg = "%s弹幕发送成功！内容：%s" % (self.lessonname, content)
         else:
@@ -334,8 +421,9 @@ class Lesson:
 
     def get_lesson_info(self):
         url = "https://pro.yuketang.cn/api/v3/lesson/basic-info"
-        r = requests.get(url=url, headers=self.headers,
-                         proxies={"http": None, "https": None})
+        r = requests.get(
+            url=url, headers=self.headers, proxies={"http": None, "https": None}
+        )
         return dict_result(r.text)["data"]
 
     def __eq__(self, other):
@@ -347,8 +435,12 @@ class User:
         self.uid = uid
 
     def get_userinfo(self, classroomid, headers):
-        r = requests.get("https://pro.yuketang.cn/v/course_meta/fetch_user_info_new?query_user_id=%s&classroom_id=%s" %
-                         (self.uid, classroomid), headers=headers, proxies={"http": None, "https": None})
+        r = requests.get(
+            "https://pro.yuketang.cn/v/course_meta/fetch_user_info_new?query_user_id=%s&classroom_id=%s"
+            % (self.uid, classroomid),
+            headers=headers,
+            proxies={"http": None, "https": None},
+        )
         data = dict_result(r.text)["data"]
         self.sno = data["school_number"]
         self.name = data["name"]
