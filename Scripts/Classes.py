@@ -42,12 +42,13 @@ class Lesson:
         self.main_ui = main_ui
 
     def _download(self, data):
+        data["title"] = data["title"].replace("/", "_").strip()
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         pdf = FPDF("L", "pt", [data["height"], data["width"]])
         http = urllib3.PoolManager()
         downloadpath = "downloads"
-        cachepath = downloadpath + "\\rainclasscache\\" + data["title"].strip()
+        cachepath = downloadpath + "\\rainclasscache\\" + data["title"]
         try:
             if not os.path.exists(downloadpath):
                 os.mkdir(downloadpath)
@@ -85,8 +86,10 @@ class Lesson:
                 pdf_name = data["title"] + str(time_info) + ".pdf"
             pdf.output(downloadpath + "\\" + pdf_name)
             self.add_message(f"{pdf_name} 下载完成", 0)
-        except:
-            self.add_message(f"{pdf_name} 下载失败。考虑使用管理员权限启动", 0)
+        except Exception as e:
+            self.add_message("下载失败。考虑使用管理员权限启动", 0)
+            self.add_message(str(e), 0)
+            print(e)
 
     def download_ppt(self, presentationid):
         threading.Thread(
