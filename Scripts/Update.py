@@ -52,6 +52,11 @@ class Update:
         os.system(self.path+self.filename)
         exit(0)
 
+    def have_new_version(self):
+        latest_version = self.get_latest_version()
+        current_version = get_version()
+        return latest_version > current_version
+
     def start(self):
         latest_version = self.get_latest_version()
         print(f"最新版本：{latest_version}")
