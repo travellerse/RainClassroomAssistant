@@ -1,16 +1,14 @@
 import json
-import os
 import random
 import threading
 import time
 
 import requests
-import urllib3
 import websocket
-from fpdf import FPDF
-from PIL import Image, ImageDraw, ImageFont
 
-from Scripts.Utils import calculate_waittime, dict_result, get_user_info, is_debug
+from Scripts.PPTManager import PPTManager
+from Scripts.Utils import (calculate_waittime, dict_result, get_user_info,
+                           is_debug)
 
 wss_url = "wss://pro.yuketang.cn/wsapp/"
 
@@ -45,51 +43,8 @@ class Lesson:
         data["title"] = data["title"].replace("/", "_").strip()
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
-        pdf = FPDF("L", "pt", [data["height"], data["width"]])
-        http = urllib3.PoolManager()
-        downloadpath = "downloads"
-        cachepath = downloadpath + "\\rainclasscache\\" + data["title"]
-        try:
-            if not os.path.exists(downloadpath):
-                os.mkdir(downloadpath)
-            if not os.path.exists(downloadpath + "\\rainclasscache"):
-                os.mkdir(downloadpath + "\\rainclasscache")
-            if not os.path.exists(cachepath):
-                os.mkdir(cachepath)
-            for slide in data["slides"]:
-                if slide["cover"] == "":
-                    continue
-                index = slide["index"]
-                image_name = cachepath + "\\" + str(index) + ".jpg"
-                pdf.add_page()
-                response = http.request("GET", slide["cover"])
-                with open(image_name, "wb") as f:
-                    f.write(response.data)
-                if index in self.problems_dict.keys():
-                    img = Image.open(image_name)
-                    font = ImageFont.truetype(
-                        "C:\\Windows\\Fonts\\msyh.ttc", 30)
-                    draw = ImageDraw.Draw(img)
-                    draw.text(
-                        (50, 50),
-                        str(self.problems_dict[index]),
-                        fill=(255, 0, 0),
-                        font=font,
-                    )
-                    img.save(image_name)
-                    # print(index, self.problems_dict[index])
-                pdf.image(name=image_name, x=0, y=0,
-                          w=data["width"], h=data["height"])
-            pdf_name = data["title"] + ".pdf"
-            if os.path.exists(downloadpath + "\\" + pdf_name):
-                time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-                pdf_name = data["title"] + str(time_info) + ".pdf"
-            pdf.output(downloadpath + "\\" + pdf_name)
-            self.add_message(f"{pdf_name} 下载完成", 0)
-        except Exception as e:
-            self.add_message("下载失败。考虑使用管理员权限启动", 0)
-            self.add_message(str(e), 0)
-            print(e)
+        pptmanager = PPTManager(data, "downloads")
+        pptmanager.start()
 
     def download_ppt(self, presentationid):
         threading.Thread(
