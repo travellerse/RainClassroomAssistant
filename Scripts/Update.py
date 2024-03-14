@@ -1,7 +1,10 @@
+import os
 import re
+import sys
 
 import requests
 import win32api
+
 from Scripts.Utils import is_debug
 
 
@@ -34,21 +37,48 @@ class Update:
         self.path = path
         self.filename = "RainClassroomAssistant.exe"
 
+    def get_url(self):
+        tag_url = "https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/latest"
+        r = requests.get(tag_url)
+        tag = re.search(
+            r"travellerse/rain-classroom-assistant-releases/releases/tag/.+?\"", r.text).group()
+        tag = tag.split("/")[-1][:-1]
+        print(tag)
+        self.url = f"https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/download/{tag}/RainClassroomAssistant.exe"
+        print(self.url)
+
     def get_latest_version(self):
         version_latest = "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
         return Version(requests.get(version_latest).text)
 
+    def release_update_script(self):
+        with open(self.path+"update.py", "w") as f:
+            f.write(
+                "import os\n"
+                "import time\n"
+                "import sys\n"
+                "try:\n"
+                "   os.system('taskkill /f /im RainClassroomAssistant.exe')\n"
+                "except:\n"
+                "   pass\n"
+                "time.sleep(2)\n"
+                "path = os.path.dirname(os.path.realpath(__file__))+'\\\\'\n"
+                "os.remove(path+'RainClassroomAssistant.exe')\n"
+                "os.rename(path+'_RainClassroomAssistant.exe', path+'RainClassroomAssistant.exe')\n"
+                "os.system(path+'RainClassroomAssistant.exe')\n"
+                "sys.exit(0)\n"
+            )
+
     def download(self):
-        with open(self.path+self.filename, "wb") as f:
+        with open(self.path+"_"+self.filename, "wb") as f:
             f.write(requests.get(self.url).content)
 
     def update(self):
+        self.get_url()
         self.download()
-        print("下载完成")
-        print("更新完成")
-        print("正在重启程序")
-        import os
-        os.system(self.path+self.filename)
+        self.release_update_script()
+        os.system("python "+self.path+"update.py")
+        sys.exit(0)
 
     def have_new_version(self):
         latest_version = self.get_latest_version()
@@ -146,4 +176,4 @@ class Version:
 
 if __name__ == "__main__":
     update = Update(".\\")
-    update.start()
+    update.get_url()

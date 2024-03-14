@@ -190,25 +190,9 @@ class MainWindow_Ui(QtCore.QObject):
         config_route = get_config_path()
         self.config = self.check_config(dir_route, config_route)
 
-        self.add_message_signal.emit("当前版本：" + get_version().__str__(), 0)
         if is_debug():
             self.add_message_signal.emit("当前为Debug模式", 0)
-        else:
-            self.add_message_signal.emit("正在检查更新", 0)
-            update = Update(".\\")
-            self.add_message_signal.emit(
-                f"最新版本：{update.get_latest_version()}", 0)
-            if (update.have_new_version()):
-                is_update = QtWidgets.QMessageBox.information(
-                    None,
-                    "发现新版本",
-                    f"发现新版本{update.get_latest_version()}，是否更新",
-                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                )
-                if (is_update == QtWidgets.QMessageBox.Yes):
-                    update.start()
-                    sys.exit(0)
-
+        self.add_message_signal.emit("当前版本：" + get_version().__str__(), 0)
         self.add_message_signal.emit("初始化完成", 0)
         self.add_message_signal.emit(
             "注意：本软件不会被用于计算雨课堂在线时长，仅提供一个登陆记录，需要自行打开雨课堂",
@@ -224,6 +208,17 @@ class MainWindow_Ui(QtCore.QObject):
             )
         else:
             self.show_login()
+
+        if is_debug():
+            self.add_message_signal.emit("正在检查更新", 0)
+            update = Update("./")
+            self.add_message_signal.emit(
+                f"最新版本：{update.get_latest_version()}", 0)
+            if (update.have_new_version()):
+                updateBox = QtWidgets.QMessageBox.question(
+                    None, "发现新版本", f"发现新版本{update.get_latest_version()}，是否更新", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                if updateBox == QtWidgets.QMessageBox.Yes:
+                    update.start()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
