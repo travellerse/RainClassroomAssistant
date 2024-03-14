@@ -1,7 +1,8 @@
+import hashlib
 import os
 import threading
 import time
-import hashlib
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from fpdf import FPDF
@@ -51,10 +52,15 @@ class PPTManager:
             problems[i]["index"] = index[i]
         return problems
 
-    def get_sha(self, file):
+    def get_md5(self, file):
         with open(file, "rb") as f:
-            sha = hashlib.sha256(f.read()).hexdigest()
-        return sha
+            md5 = hashlib.md5(f.read()).hexdigest()
+        return md5
+
+    def get_sha256(self, file):
+        with open(file, "rb") as f:
+            sha256 = hashlib.sha256(f.read()).hexdigest()
+        return sha256
 
     def generate_ppt(self):
         new_flag = False
@@ -76,10 +82,10 @@ class PPTManager:
                 print(problem["answers"])
                 img.save(image_name)
             print(slide)
-            sha = self.get_sha(image_name)
-            if sha not in self.hash_list:
+            sha256 = self.get_sha256(image_name)
+            if sha256 not in self.hash_list:
                 new_flag = True
-            self.hash_list.add(sha)
+            self.hash_list.add(sha256)
         if not new_flag:
             print("No new slides")
             return
@@ -114,5 +120,38 @@ class PPTManager:
                 f.write(requests.get(url).content)
 
         def run(self):
-            for slide in self.slides:
-                self.download(slide)
+            with ThreadPoolExecutor() as executor:  # Use ThreadPoolExecutor
+                for slide in self.slides:
+                    # Submit download tasks to the thread pool
+                    executor.submit(self.download, slide)
+
+
+if __name__ == "__main__":
+    data = {
+        "title": "第一章",
+        "slides": [
+            {
+                "index": 1,
+                "cover": "https://rainclass.oss-cn-shanghai.aliyuncs.com/cover/2021/09/17/1631861003.jpg",
+                "problem": {
+                    "answers": [1, 2, 3, 4]
+                }
+            },
+            {
+                "index": 2,
+                "cover": "https://rainclass.oss-cn-shanghai.aliyuncs.com/cover/2021/09/17/1631861003.jpg",
+                "problem": {
+                    "answers": [1, 2, 3, 4]
+                }
+            }
+        ],
+        "width": 1920,
+        "height": 1080
+    }
+    downloadpath = "downloads"
+    ppt = PPTManager(data, downloadpath)
+    start_time = time.time()
+    for image in os.listdir(ppt.cachepath):
+        print(ppt.get_sha256(ppt.cachepath + "\\" + image))
+    end_time = time.time()
+    print(end_time - start_time)
