@@ -1,4 +1,4 @@
-# RainClassroomAssitant
+# RainClassroomAssistant
 ## notice
 此版本将进入维护状态，敬请期待重构后的新版本
 ## 原库https://github.com/TrickyDeath/RainClassroomAssitant

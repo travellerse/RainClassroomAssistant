@@ -30,12 +30,12 @@ def get_version():
 
 class Update:
     def __init__(self, path):
-        self.url = "https://gitee.com/travellerse/rain-classroom-assitant-releases/releases/latest/download/RainClassroomAssitant.exe"
+        self.url = "https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/latest/download/RainClassroomAssistant.exe"
         self.path = path
-        self.filename = "RainClassroomAssitant.exe"
+        self.filename = "RainClassroomAssistant.exe"
 
     def get_latest_version(self):
-        version_latest = "https://gitee.com/travellerse/rain-classroom-assitant-releases/raw/master/version.txt"
+        version_latest = "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
         return Version(requests.get(version_latest).text)
 
     def download(self):
@@ -50,7 +50,6 @@ class Update:
         import os
 
         os.system(self.path+self.filename)
-        exit(0)
 
     def have_new_version(self):
         latest_version = self.get_latest_version()
