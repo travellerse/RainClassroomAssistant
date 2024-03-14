@@ -37,22 +37,3 @@ exe = EXE(
     icon=['UI\\Image\\favicon.ico'],
     version='file_version_info.txt'
 )
-
-app = BUNDLE(exe,
-    name='RainClassroomAssistant.app',
-    icon=None,
-    bundle_identifier=None,
-    version='0.0.1',
-    info_plist={
-        'NSPrincipalClass': 'NSApplication',
-        'NSAppleScriptEnabled': False,
-        'CFBundleDocumentTypes': [
-            {
-                'CFBundleTypeName': 'My File Format',
-                'CFBundleTypeIconFile': 'MyFileIcon.icns',
-                'LSItemContentTypes': ['com.example.myformat'],
-                'LSHandlerRank': 'Owner'
-            }
-        ]
-    },
-)
