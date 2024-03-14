@@ -43,8 +43,13 @@ class Lesson:
         data["title"] = data["title"].replace("/", "_").strip()
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
-        pptmanager = PPTManager(data, "downloads")
-        pptmanager.start()
+        try:
+            pptmanager = PPTManager(data, "downloads")
+            pptmanager.start()
+            self.add_message("下载ppt成功 : " + data["title"] + ".pdf", 0)
+        except Exception as e:
+            self.add_message("下载ppt失败 : " + data["title"] + ".pdf", 0)
+            self.add_message("错误信息 : " + str(e), 0)
 
     def download_ppt(self, presentationid):
         threading.Thread(
