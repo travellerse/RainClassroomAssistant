@@ -48,7 +48,6 @@ class Update:
         print("更新完成")
         print("正在重启程序")
         import os
-
         os.system(self.path+self.filename)
 
     def have_new_version(self):

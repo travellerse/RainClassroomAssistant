@@ -207,6 +207,7 @@ class MainWindow_Ui(QtCore.QObject):
                 )
                 if (is_update == QtWidgets.QMessageBox.Yes):
                     update.start()
+                    sys.exit(0)
 
         self.add_message_signal.emit("初始化完成", 0)
         self.add_message_signal.emit(
