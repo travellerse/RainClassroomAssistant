@@ -82,10 +82,10 @@ class PPTManager:
                 print(problem["answers"])
                 img.save(image_name)
             print(slide)
-            sha256 = self.get_sha256(image_name)
-            if sha256 not in self.hash_list:
+            md5 = self.get_md5(image_name)
+            if md5 not in self.hash_list:
                 new_flag = True
-            self.hash_list.add(sha256)
+            self.hash_list.add(md5)
         if not new_flag:
             print("No new slides")
             return
