@@ -196,6 +196,8 @@ class MainWindow_Ui(QtCore.QObject):
         else:
             self.add_message_signal.emit("正在检查更新", 0)
             update = Update(".\\")
+            self.add_message_signal.emit(
+                f"最新版本:{update.get_latest_version()}", 0)
             if (update.have_new_version()):
                 is_update = QtWidgets.QMessageBox.information(
                     None,
