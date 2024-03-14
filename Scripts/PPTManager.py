@@ -1,6 +1,7 @@
 import os
 import threading
 import time
+import hashlib
 
 import requests
 from fpdf import FPDF
@@ -18,6 +19,7 @@ class PPTManager:
         self.slides = data["slides"]
         self.width = data["width"]
         self.height = data["height"]
+        self.hash_list = set()
         self.check_dir()
 
     def check_dir(self):
@@ -49,11 +51,15 @@ class PPTManager:
             problems[i]["index"] = index[i]
         return problems
 
+    def get_sha(self, file):
+        with open(file, "rb") as f:
+            sha = hashlib.sha256(f.read()).hexdigest()
+        return sha
+
     def generate_ppt(self):
-        ppt = FPDF("L", "pt", [self.height, self.width])
+        new_flag = False
         for slide in self.slides:
             image_name = self.cachepath + "\\" + str(slide["index"]) + ".jpg"
-            ppt.add_page()
             if "problem" in slide.keys():
                 problem = slide["problem"]
                 # print(problem)
@@ -70,9 +76,19 @@ class PPTManager:
                 print(problem["answers"])
                 img.save(image_name)
             print(slide)
-            ppt.image(name=image_name, x=0, y=0,
-                      w=self.width, h=self.height)
+            sha = self.get_sha(image_name)
+            if sha not in self.hash_list:
+                new_flag = True
+            self.hash_list.add(sha)
+        if not new_flag:
+            print("No new slides")
+            return
+        ppt = FPDF("L", "pt", [self.height, self.width])
         pdf_name = self.title + ".pdf"
+        for slide in self.slides:
+            image_name = self.cachepath + "\\" + str(slide["index"]) + ".jpg"
+            ppt.add_page()
+            ppt.image(image_name, 0, 0, self.height, self.width)
         if os.path.exists(self.downloadpath + "\\" + pdf_name):
             time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
             pdf_name = self.title + str(time_info) + ".pdf"
