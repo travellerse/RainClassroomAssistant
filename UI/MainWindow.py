@@ -18,6 +18,7 @@ from deepdiff import DeepDiff
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Scripts.Monitor import monitor
+from Scripts.Update import Update, get_version
 from Scripts.Utils import *
 from UI.Config import Config_Ui
 from UI.Login import Login_Ui
@@ -189,18 +190,14 @@ class MainWindow_Ui(QtCore.QObject):
         config_route = get_config_path()
         self.config = self.check_config(dir_route, config_route)
 
+        self.add_message_signal.emit("当前版本：" + get_version().__str__(), 0)
         if is_debug():
             self.add_message_signal.emit("当前为Debug模式", 0)
-            with open("file_version_info.txt", "r") as f:
-                version_info = f.read()
-            version = (
-                re.search("u'FileVersion', u'.*'",
-                          version_info).group().split("'")[3]
-            )
-            self.add_message_signal.emit(f"当前版本：{version}", 0)
-            # print(get_version())
         else:
-            self.add_message_signal.emit("当前版本：" + get_version(), 0)
+            self.add_message_signal.emit("正在检查更新", 0)
+            update = Update(".\\")
+            update.start()
+
         self.add_message_signal.emit("初始化完成", 0)
         self.add_message_signal.emit(
             "注意：本软件不会被用于计算雨课堂在线时长，仅提供一个登陆记录，需要自行打开雨课堂",
