@@ -148,10 +148,17 @@ if __name__ == "__main__":
         "width": 1920,
         "height": 1080
     }
+
+    def get_time(function):
+        start_time = time.time()
+        for image in os.listdir(ppt.cachepath):
+            function(ppt.cachepath + "\\" + image)
+        end_time = time.time()
+        print(function.__name__)
+        print(f"{end_time - start_time}/{len(os.listdir(ppt.cachepath))}={(end_time - start_time)/len(os.listdir(ppt.cachepath))}")
+        print("----------------------------------------------------------------")
+
     downloadpath = "downloads"
     ppt = PPTManager(data, downloadpath)
-    start_time = time.time()
-    for image in os.listdir(ppt.cachepath):
-        print(ppt.get_sha256(ppt.cachepath + "\\" + image))
-    end_time = time.time()
-    print(end_time - start_time)
+    get_time(ppt.get_md5)
+    get_time(ppt.get_sha256)
