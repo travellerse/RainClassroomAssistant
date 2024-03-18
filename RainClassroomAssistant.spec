@@ -37,3 +37,10 @@ exe = EXE(
     icon=['UI\\Image\\favicon.ico'],
     version='file_version_info.txt'
 )
+
+app = BUNDLE(exe,
+    name='RainClassroomAssistant.app',
+    icon=None,
+    bundle_identifier=None,
+    version='0.3.4',
+)
