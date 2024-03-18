@@ -38,14 +38,15 @@ class Lesson:
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
         self.main_ui = main_ui
+        self.pptmanager = None
 
     def _download(self, data):
         data["title"] = data["title"].replace("/", "_").strip()
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
-            pptmanager = PPTManager(data, "downloads")
-            pptmanager.start()
+            self.pptmanager = PPTManager(data, "downloads")
+            self.pptmanager.start()
             self.add_message("下载ppt成功 : " + data["title"] + ".pdf", 0)
         except Exception as e:
             self.add_message("下载ppt失败 : " + data["title"] + ".pdf", 0)
