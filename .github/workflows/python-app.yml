@@ -23,4 +23,15 @@ jobs:
         spec: 'RainClassroomAssistant.spec'
         requirements: 'requirements.txt'
         upload_exe_with_name: 'RainClassroomAssistant'
-            
+  
+  pyinstaller-build-ios:
+    runs-on: macos-latest
+    steps:
+    - name: PyInstaller Action
+      uses: Martin005/pyinstaller-action@v1.2.0
+      with:
+        python_ver: '3.10'
+        requirements: 'requirements.txt'
+        upload_exe_with_name: 'RainClassroomAssistant'
+        options: --onefile, --name "RainClassroomAssistant", --windowed
+
