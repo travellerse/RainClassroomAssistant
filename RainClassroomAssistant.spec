@@ -5,7 +5,7 @@ a = Analysis(
     ['RainClassroomAssistant.py'],
     pathex=[],
     binaries=[],
-    datas=[('UI\\Image\\favicon.ico','UI\\Image'),('UI\\Image\\NoRainClassroom.jpg','UI\\Image')],
+    datas=[('UI/Image/favicon.ico','UI/Image'),('UI/Image/NoRainClassroom.jpg','UI/Image')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
