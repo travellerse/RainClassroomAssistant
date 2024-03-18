@@ -7,10 +7,12 @@ from math import exp
 import pyttsx3
 import requests
 import urllib3
-import win32api
-import win32con
 from numpy import random
-from win10toast import ToastNotifier
+
+if os.name == "nt":
+    import win32api
+    import win32con
+    from win10toast import ToastNotifier
 
 lock = threading.Lock()
 toaster = ToastNotifier()
@@ -32,7 +34,8 @@ def show_info(text, title):
     toaster.show_toast(
         title, text, icon_path=r"UI\Image\favicon.ico", duration=15, threaded=True
     )
-    win32api.MessageBox(0, text, title, win32con.MB_OK)
+    if os.name == "nt":
+        win32api.MessageBox(0, text, title, win32con.MB_OK)
 
 
 def dict_result(text):

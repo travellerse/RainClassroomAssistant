@@ -3,7 +3,9 @@ import re
 import sys
 
 import requests
-import win32api
+
+if os.name == "nt":
+    import win32api
 
 from Scripts.Utils import is_debug
 
@@ -18,16 +20,20 @@ def get_version():
                       version_info).group().split("'")[3]
         )
     else:
-        info = win32api.GetFileVersionInfo(
-            win32api.GetModuleFileName(win32api.GetModuleHandle(None)), "\\"
-        )  # 获取文件版本信息
-        ms = info["FileVersionMS"]
-        ls = info["FileVersionLS"]
-        version = "%d.%d.%d" % (
-            win32api.HIWORD(ms),
-            win32api.LOWORD(ms),
-            win32api.HIWORD(ls),
-        )
+        if os.name == "nt":
+            info = win32api.GetFileVersionInfo(
+                win32api.GetModuleFileName(
+                    win32api.GetModuleHandle(None)), "\\"
+            )  # 获取文件版本信息
+            ms = info["FileVersionMS"]
+            ls = info["FileVersionLS"]
+            version = "%d.%d.%d" % (
+                win32api.HIWORD(ms),
+                win32api.LOWORD(ms),
+                win32api.HIWORD(ls),
+            )
+        elif (os.paltform == "ios"):
+            version = "1.0.0"
     return Version(version)  # 获取文件版本号
 
 
