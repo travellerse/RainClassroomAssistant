@@ -2,7 +2,6 @@ import hashlib
 import os
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from fpdf import FPDF
@@ -134,10 +133,8 @@ class PPTManager:
                 f.write(requests.get(url).content)
 
         def run(self):
-            with ThreadPoolExecutor() as executor:  # Use ThreadPoolExecutor
-                for slide in self.slides:
-                    # Submit download tasks to the thread pool
-                    executor.submit(self.download, slide)
+            for slide in self.slides:
+                self.download(slide)
 
 
 if __name__ == "__main__":
