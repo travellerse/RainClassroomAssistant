@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 class PPTManager:
     threading_count = 4
+    title_dict = {}
 
     def __init__(self, data, downloadpath):
         self.title = data["title"].replace("/", "_").strip()
@@ -36,7 +37,6 @@ class PPTManager:
         div_num = int(len(self.slides)/self.threading_count)
         for i in range(0, len(self.slides), div_num):
             slides = self.slides[i:i+div_num]
-            print(i, i+div_num)
             download_thread.append(self.DownloadThread(slides, self.cachepath))
         for thread in download_thread:
             thread.start()
@@ -62,8 +62,16 @@ class PPTManager:
             sha256 = hashlib.sha256(f.read()).hexdigest()
         return sha256
 
+    def add_hash(self, path):
+        for img in os.listdir(path):
+            self.hash_list.add(self.get_md5(path + "\\" + img))
+            print(path + "\\" + img)
+
     def generate_ppt(self):
         new_flag = False
+        pdf_name = self.title + ".pdf"
+        if os.path.exists(self.downloadpath + "\\" + pdf_name):
+            self.add_hash(self.cachepath)
         for slide in self.slides:
             image_name = self.cachepath + "\\" + str(slide["index"]) + ".jpg"
             if "problem" in slide.keys():
@@ -79,30 +87,36 @@ class PPTManager:
                     fill=(255, 0, 0),
                     font=font,
                 )
-                print(problem["answers"])
                 img.save(image_name)
-            print(slide)
             md5 = self.get_md5(image_name)
             if md5 not in self.hash_list:
+                print(f"New slide: {slide['index']}")
                 new_flag = True
             self.hash_list.add(md5)
         if not new_flag:
             print("No new slides")
             return
         ppt = FPDF("L", "pt", [self.height, self.width])
-        pdf_name = self.title + ".pdf"
         for slide in self.slides:
             image_name = self.cachepath + "\\" + str(slide["index"]) + ".jpg"
             ppt.add_page()
-            ppt.image(image_name, 0, 0, self.height, self.width)
+            ppt.image(image_name, 0, 0, h=self.height, w=self.width)
         if os.path.exists(self.downloadpath + "\\" + pdf_name):
-            time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-            pdf_name = self.title + str(time_info) + ".pdf"
+            mtime = os.path.getmtime(self.downloadpath + "\\" + pdf_name)
+            day = time.strftime("%Y%m%d", time.localtime(mtime))
+            if day != time.strftime("%Y%m%d", time.localtime()):
+                time_info = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+                pdf_name = self.title + str(time_info) + ".pdf"
         ppt.output(self.downloadpath + "\\" + pdf_name)
 
     def start(self):
+        if self.title in self.title_dict:
+            print("PPTManager with the same title is already running.")
+            return
+        self.title_dict[self.title] = self
         self.download()
         self.generate_ppt()
+        del self.title_dict[self.title]
 
     class DownloadThread(threading.Thread):
         def __init__(self, slides, cachepath):
@@ -162,3 +176,4 @@ if __name__ == "__main__":
     ppt = PPTManager(data, downloadpath)
     get_time(ppt.get_md5)
     get_time(ppt.get_sha256)
+    ppt.start()
