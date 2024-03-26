@@ -12,7 +12,7 @@ class PPTManager:
     threading_count = 4
     title_dict = {}
 
-    def __init__(self, data, downloadpath):
+    def __init__(self, data, downloadpath="downloads"):
         self.title = data["title"].replace("/", "_").strip()
         self.downloadpath = downloadpath
         self.cachedirpath = downloadpath + "\\rainclasscache"
@@ -116,6 +116,12 @@ class PPTManager:
         self.download()
         self.generate_ppt()
         del self.title_dict[self.title]
+
+    def __eq__(self, __value: object) -> bool:
+        if (self.title != __value.title):
+            return False
+        else:
+            return self.slides == __value.slides
 
     class DownloadThread(threading.Thread):
         def __init__(self, slides, cachepath):

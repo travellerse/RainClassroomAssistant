@@ -38,16 +38,20 @@ class Lesson:
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
         self.main_ui = main_ui
-        self.pptmanager = None
+        self.pptmanager_dict = {}
 
     def _download(self, data):
         data["title"] = data["title"].replace("/", "_").strip()
         self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
-            self.pptmanager = PPTManager(data, "downloads")
-            self.pptmanager.start()
-            self.add_message("下载ppt成功 : " + data["title"] + ".pdf", 0)
+            if (self.pptmanager_dict.get(data["title"]) == None):
+                self.pptmanager_dict[data["title"]] = PPTManager(data)
+                self.pptmanager_dict[data["title"]].start()
+                self.add_message("下载ppt成功 : " + data["title"] + ".pdf", 0)
+            else:
+                self.add_message(
+                    "PPTManager with the same title is already running.", 0)
         except Exception as e:
             self.add_message("下载ppt失败 : " + data["title"] + ".pdf", 0)
             self.add_message("错误信息 : " + str(e), 0)
