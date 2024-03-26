@@ -4,7 +4,7 @@ import sys
 
 import requests
 
-if os.name == "nt":
+if sys.platform.startswith("win"):
     import win32api
 
 from Scripts.Utils import is_debug
@@ -20,7 +20,7 @@ def get_version():
                       version_info).group().split("'")[3]
         )
     else:
-        if os.name == "nt":
+        if sys.platform.startswith("win"):
             info = win32api.GetFileVersionInfo(
                 win32api.GetModuleFileName(
                     win32api.GetModuleHandle(None)), "\\"
@@ -32,8 +32,8 @@ def get_version():
                 win32api.LOWORD(ms),
                 win32api.HIWORD(ls),
             )
-        elif (os.paltform == "ios"):
-            version = "1.0.0"
+        elif (sys.platform == "darwin"):
+            version = "0.3.5"
     return Version(version)  # 获取文件版本号
 
 

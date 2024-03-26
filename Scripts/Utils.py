@@ -9,7 +9,7 @@ import requests
 import urllib3
 from numpy import random
 
-if os.name == "nt":
+if sys.platform.startswith("win"):
     import win32api
     import win32con
     from win10toast import ToastNotifier
@@ -34,7 +34,7 @@ def show_info(text, title):
     toaster.show_toast(
         title, text, icon_path=r"UI\Image\favicon.ico", duration=15, threaded=True
     )
-    if os.name == "nt":
+    if sys.platform.startswith("win"):
         win32api.MessageBox(0, text, title, win32con.MB_OK)
 
 
