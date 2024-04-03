@@ -16,6 +16,8 @@ permissions:
 jobs:
   pyinstaller-build:
     runs-on: windows-latest
+    outputs:
+      executable_path: ${{workflow.workspace}}/dist/RainClassroomAssistant.exe
     steps:
     - name: PyInstaller Action
       uses: Martin005/pyinstaller-action@v1.2.0
@@ -28,10 +30,10 @@ jobs:
   
   pyinstaller-build-ios:
     runs-on: macos-latest
+    if: false
     steps:
     - name: PyInstaller Action
       uses: Martin005/pyinstaller-action@v1.2.0
-      if: false
       with:
         python_ver: '3.10'
         spec: 'RainClassroomAssistant.spec'
@@ -62,7 +64,7 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
-            ## Changes
-            - hash: ${{ steps.hash.outputs.hash }}
+            ## hash
+            - RainClassroomAssistant.exe: ${{ steps.hash.outputs.hash }}
           draft: false
           prerelease: false
