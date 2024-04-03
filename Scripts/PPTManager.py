@@ -20,10 +20,14 @@ class PPTManager:
         self.timeinfo = time.strftime(
             "%Y%m%d-%H%M%S", time.localtime(float(self.timestamp)))
         self.downloadpath = downloadpath
+
+        self.lessondownloadpath = downloadpath + "\\" + self.lessonname
+
         self.cachedirpath = downloadpath + "\\rainclasscache"
         self.lessonpath = self.cachedirpath + "\\" + self.lessonname
         self.titlepath = self.lessonpath + "\\" + self.title
         self.imgpath = self.titlepath + "\\" + self.timestamp
+
         self.slides = data["slides"]
         self.width = data["width"]
         self.height = data["height"]
@@ -33,6 +37,10 @@ class PPTManager:
     def check_dir(self):
         if not os.path.exists(self.downloadpath):
             os.mkdir(self.downloadpath)
+
+        if not os.path.exists(self.lessondownloadpath):
+            os.mkdir(self.lessondownloadpath)
+
         if not os.path.exists(self.cachedirpath):
             os.mkdir(self.cachedirpath)
         if not os.path.exists(self.lessonpath):
@@ -104,13 +112,17 @@ class PPTManager:
                 f.write(md5 + "\n")
         hash = self.get_sha256(self.imgpath + "\\md5.txt")
         print(self.title+":"+hash)
-        for pdf in os.listdir(self.downloadpath):
-            if pdf.endswith(".pdf"):
+        for pdf in os.scandir(self.downloadpath):
+            if pdf.path == self.downloadpath + "\\" + pdf_name:
+                os.replace(pdf.path, self.lessondownloadpath +
+                           "\\" + pdf_name)
+        for pdf in os.scandir(self.lessondownloadpath):
+            if pdf.name.endswith(".pdf"):
                 try:
                     keywords = PyPDF2.PdfReader(
-                        open(self.downloadpath + "\\" + pdf, "rb")).metadata.get("/Keywords")
+                        open(pdf.path, "rb")).metadata.get("/Keywords")
                     if hash == keywords:
-                        return pdf
+                        return pdf.name
                 except Exception as e:
                     print(e)
         ppt = FPDF("L", "pt", [self.height, self.width])
@@ -121,12 +133,9 @@ class PPTManager:
                 "\\" + str(slide["index"]) + ".jpg"
             ppt.add_page()
             ppt.image(image_name, 0, 0, h=self.height, w=self.width)
-        if os.path.exists(self.downloadpath + "\\" + pdf_name):
-            mtime = os.path.getmtime(self.downloadpath + "\\" + pdf_name)
-            # day = time.strftime("%Y%m%d", time.localtime(mtime))
-            # if day != time.strftime("%Y%m%d", time.localtime()):
+        if os.path.exists(self.lessondownloadpath + "\\" + pdf_name):
             pdf_name = self.title + str(self.timeinfo) + ".pdf"
-        ppt.output(self.downloadpath + "\\" + pdf_name)
+        ppt.output(self.lessondownloadpath + "\\" + pdf_name)
         return pdf_name
 
     def delete_cache(self):
