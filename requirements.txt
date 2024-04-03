@@ -7,4 +7,5 @@ fpdf
 numpy
 deepdiff
 Pillow
+PyPDF2
 win10toast; platform_system=='Windows'
