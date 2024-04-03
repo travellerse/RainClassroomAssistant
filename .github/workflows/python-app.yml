@@ -8,6 +8,7 @@ on:
     paths: 
       - 'file_version_info.txt'
       - 'RainClassroomAssistant.spec'
+      - 'python-app.yml'
 
 permissions:
   contents: read
@@ -45,7 +46,7 @@ jobs:
     - name: get version
       id: get_version
       run: |
-        version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print('v' + re.search('FileVersion', f.read()).group().split(' ')[3])")
+        version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print(re.search(\"u'FileVersion', u'.*'\",f.read()).group().split(\"'\")[3])")
         echo "::set-output name=version::$version"
     - name: calulate hash
       id: hash
