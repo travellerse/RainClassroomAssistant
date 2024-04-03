@@ -52,7 +52,7 @@ jobs:
           version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print('v'+re.search(\"u'FileVersion', u'.*'\",f.read()).group().split(\"'\")[3])")
           echo "::set-output name=version::$version"
       - name: download executable
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: RainClassroomAssistant
           path: dist
