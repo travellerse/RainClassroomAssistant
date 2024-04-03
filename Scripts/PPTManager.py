@@ -13,16 +13,17 @@ class PPTManager:
     threading_count = 8
     title_dict = {}
 
-    def __init__(self, data, downloadpath="downloads"):
+    def __init__(self, data, lessonname, downloadpath="downloads"):
+        self.lessonname = lessonname
         self.title = data["title"].replace("/", "_").strip()
         self.timestamp = str(time.time())
         self.timeinfo = time.strftime(
             "%Y%m%d-%H%M%S", time.localtime(float(self.timestamp)))
         self.downloadpath = downloadpath
         self.cachedirpath = downloadpath + "\\rainclasscache"
-        self.cachepath = downloadpath + "\\rainclasscache\\" + self.title
-        self.cacheimgpath = downloadpath + "\\rainclasscache\\" + \
-            self.title + "\\" + self.timestamp
+        self.lessonpath = self.cachedirpath + "\\" + self.lessonname
+        self.titlepath = self.lessonpath + "\\" + self.title
+        self.imgpath = self.titlepath + "\\" + self.timestamp
         self.slides = data["slides"]
         self.width = data["width"]
         self.height = data["height"]
@@ -34,10 +35,12 @@ class PPTManager:
             os.mkdir(self.downloadpath)
         if not os.path.exists(self.cachedirpath):
             os.mkdir(self.cachedirpath)
-        if not os.path.exists(self.cachepath):
-            os.mkdir(self.cachepath)
-        if not os.path.exists(self.cacheimgpath):
-            os.mkdir(self.cacheimgpath)
+        if not os.path.exists(self.lessonpath):
+            os.mkdir(self.lessonpath)
+        if not os.path.exists(self.titlepath):
+            os.mkdir(self.titlepath)
+        if not os.path.exists(self.imgpath):
+            os.mkdir(self.imgpath)
 
     def download(self):
         download_thread = []
@@ -45,7 +48,7 @@ class PPTManager:
         for i in range(0, len(self.slides), div_num):
             slides = self.slides[i:i+div_num]
             download_thread.append(
-                self.DownloadThread(slides, self.cacheimgpath))
+                self.DownloadThread(slides, self.imgpath))
         for thread in download_thread:
             thread.start()
         for thread in download_thread:
@@ -78,7 +81,7 @@ class PPTManager:
     def generate_ppt(self):
         pdf_name = self.title + ".pdf"
         for slide in self.slides:
-            image_name = self.cacheimgpath + \
+            image_name = self.imgpath + \
                 "\\" + str(slide["index"]) + ".jpg"
             md5 = self.get_md5(image_name)
             self.md5_list.append(md5)
@@ -96,17 +99,16 @@ class PPTManager:
                     font=font,
                 )
                 img.save(image_name)
-        with open(self.cacheimgpath + "\\md5.txt", "w") as f:
+        with open(self.imgpath + "\\md5.txt", "w") as f:
             for md5 in self.md5_list:
                 f.write(md5 + "\n")
-        hash = self.get_sha256(self.cacheimgpath + "\\md5.txt")
-        print(hash)
+        hash = self.get_sha256(self.imgpath + "\\md5.txt")
+        print(self.title+":"+hash)
         for pdf in os.listdir(self.downloadpath):
             if pdf.endswith(".pdf"):
                 try:
                     keywords = PyPDF2.PdfReader(
                         open(self.downloadpath + "\\" + pdf, "rb")).metadata.get("/Keywords")
-                    print(keywords)
                     if hash == keywords:
                         return pdf
                 except Exception as e:
@@ -115,7 +117,7 @@ class PPTManager:
         ppt.set_keywords(hash)
         ppt.set_author("RainClassroom")
         for slide in self.slides:
-            image_name = self.cacheimgpath + \
+            image_name = self.imgpath + \
                 "\\" + str(slide["index"]) + ".jpg"
             ppt.add_page()
             ppt.image(image_name, 0, 0, h=self.height, w=self.width)
@@ -128,15 +130,16 @@ class PPTManager:
         return pdf_name
 
     def delete_cache(self):
-        for file in os.listdir(self.cacheimgpath):
-            os.remove(self.cacheimgpath + "\\" + file)
-        os.rmdir(self.cacheimgpath)
+        for file in os.listdir(self.imgpath):
+            os.remove(self.imgpath + "\\" + file)
+        os.rmdir(self.imgpath)
 
     def start(self):
         self.download()
         pdfname = self.generate_ppt()
         self.delete_cache()
-        return pdfname
+        usetime = round(time.time() - float(self.timestamp), 4)
+        return pdfname, usetime
 
     def __eq__(self, __value: object) -> bool:
         if (self.title != __value.title):
@@ -148,14 +151,14 @@ class PPTManager:
         def __init__(self, slides, cacheimgpath):
             threading.Thread.__init__(self)
             self.slides = slides
-            self.cacheimgpath = cacheimgpath
+            self.imgpath = cacheimgpath
 
         def download(self, slide):
             url = slide["cover"]
             if url == "":
                 return
             index = slide["index"]
-            image_name = self.cacheimgpath + "\\" + str(index) + ".jpg"
+            image_name = self.imgpath + "\\" + str(index) + ".jpg"
             with open(image_name, "wb") as f:
                 f.write(requests.get(url).content)
 
