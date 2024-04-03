@@ -5,9 +5,9 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    paths: 
+      - 'file_version_info.txt'
+      - 'RainClassroomAssistant.spec'
 
 permissions:
   contents: read
@@ -39,10 +39,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: [pyinstaller-build, pyinstaller-build-ios]
-    on:
-      push:
-        paths: 
-          - 'file_version_info.txt'
     steps:
     - name: Checkout
       uses: actions/checkout@v2
