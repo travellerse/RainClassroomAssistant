@@ -17,7 +17,7 @@ jobs:
   pyinstaller-build:
     runs-on: windows-latest
     outputs:
-      executable_path: ${{workflow.workspace}}/dist/RainClassroomAssistant.exe
+      executable_path: ./dist/RainClassroomAssistant.exe
     steps:
     - name: PyInstaller Action
       uses: Martin005/pyinstaller-action@v1.2.0
