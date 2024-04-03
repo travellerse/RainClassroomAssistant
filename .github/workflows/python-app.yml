@@ -11,7 +11,7 @@ on:
       - 'python-app.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   pyinstaller-build:
@@ -24,6 +24,7 @@ jobs:
         spec: 'RainClassroomAssistant.spec'
         requirements: 'requirements.txt'
         upload_exe_with_name: 'RainClassroomAssistant'
+
   
   pyinstaller-build-ios:
     runs-on: macos-latest
@@ -39,7 +40,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [pyinstaller-build]
+    needs: [pyinstaller-build, pyinstaller-build-ios]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,13 +52,13 @@ jobs:
       - name: calulate hash
         id: hash
         run: |
-          hash=$(sha256sum RainClassroomAssistant.exe | cut -d ' ' -f 1)
+          hash=$(sha256sum ${{needs.pyinstaller-build.outputs.executable_path}} | cut -d ' ' -f 1)
           echo "::set-output name=hash::$hash"
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: RainClassroomAssistant.exe
+          files: ${{needs.pyinstaller-build.outputs.executable_path}}
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
