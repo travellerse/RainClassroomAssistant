@@ -2,6 +2,7 @@ import json
 import random
 import threading
 import time
+import traceback
 
 import requests
 import websocket
@@ -42,14 +43,15 @@ class Lesson:
 
     def _download(self, data):
         data["title"] = data["title"].replace("/", "_").strip()
-        self.add_message(f"{self.lessonname}的答案为" + str(self.problems_dict), 0)
+        self.add_message(
+            f"{self.lessonname}:{data['title']} 的答案为" + str(self.problems_dict), 0)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
             pdfname, usetime = PPTManager(data, self.lessonname).start()
             self.add_message("下载ppt成功 : " + pdfname + f"，耗时{usetime}秒", 0)
         except Exception as e:
             self.add_message("下载ppt失败 : " + data["title"] + ".pdf", 0)
-            self.add_message("错误信息 : " + str(e), 0)
+            self.add_message(traceback.format_exc(), 0)
 
     def download_ppt(self, presentationid):
         threading.Thread(
