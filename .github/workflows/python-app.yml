@@ -36,3 +36,33 @@ jobs:
         upload_exe_with_name: 'RainClassroomAssistant'
         options: --onefile, --name "RainClassroomAssistant", --windowed
 
+  release:
+    runs-on: ubuntu-latest
+    needs: [pyinstaller-build, pyinstaller-build-ios]
+    if: (github.event_name == 'push' && github.event.head_commit.modified.contains('file_version_info.txt')) || github.event.head_commit.modified.contains('python-app.yml')
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: get version
+      id: get_version
+      run: |
+        version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print('v' + re.search('FileVersion', f.read()).group().split(' ')[3])")
+        echo "::set-output name=version::$version"
+    - name: calulate hash
+      run: |
+        hash=$(sha256sum RainClassroomAssistant.exe | cut -d ' ' -f 1)
+        echo "::set-output name=hash::$hash"
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: RainClassroomAssistant.exe
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: ${{ steps.get_version.outputs.version }}
+        body: |
+          ## Changes
+          - hash: ${{ steps.hash.outputs.hash }}
+        draft: false
+        prerelease: false
