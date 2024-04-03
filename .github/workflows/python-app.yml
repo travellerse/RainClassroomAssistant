@@ -69,7 +69,7 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
-            ## hash
+            ## hash256
             - RainClassroomAssistant.exe: ${{ steps.hash.outputs.hash }}
           draft: false
           prerelease: false
