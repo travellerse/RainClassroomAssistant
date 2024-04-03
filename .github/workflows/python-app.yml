@@ -39,7 +39,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: [pyinstaller-build, pyinstaller-build-ios]
-    if: ${{ github.event.head_commit.modified | contains('file_version_info.txt')}}
+    on:
+      push:
+        paths: 
+          - 'file_version_info.txt'
     steps:
     - name: Checkout
       uses: actions/checkout@v2
