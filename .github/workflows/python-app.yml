@@ -52,20 +52,20 @@ jobs:
           version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print('v'+re.search(\"u'FileVersion', u'.*'\",f.read()).group().split(\"'\")[3])")
           echo "::set-output name=version::$version"
       - name: download executable
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: RainClassroomAssistant
-          path: dist
+          path: ./dist
       - name: calulate hash
         id: hash
         run: |
-          hash=$(sha256sum ${{needs.pyinstaller-build.outputs.executable_path}} | cut -d ' ' -f 1)
+          hash=$(sha256sum ./dist/RainClassroomAssistant.exe | cut -d ' ' -f 1)
           echo "::set-output name=hash::$hash"
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{needs.pyinstaller-build.outputs.executable_path}}
+          files: ./dist/RainClassroomAssistant.exe
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
