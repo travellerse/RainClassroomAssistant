@@ -8,9 +8,7 @@ on:
     paths: 
       - 'file_version_info.txt'
       - 'RainClassroomAssistant.spec'
-  push:
-    paths:
-      - 'python-app.yml'
+      - '.github\workflows\python-app.yml'
 
 permissions:
   contents: read
