@@ -43,8 +43,7 @@ class Lesson:
 
     def _download(self, data):
         data["title"] = data["title"].replace("/", "_").strip()
-        self.add_message(
-            f"{self.lessonname}:{data['title']} 的答案为" + str(self.problems_dict), 0)
+        self.print_problems(data)
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
             pdfname, usetime = PPTManager(data, self.lessonname).start()
@@ -67,6 +66,19 @@ class Lesson:
             proxies={"http": None, "https": None},
         )
         return dict_result(r.text)["data"]
+
+    def print_problems(self, data):
+        answers = {}
+        slides = [problem for problem in data["slides"]
+                  if "problem" in problem.keys()]
+        index = [problem["index"] for problem in slides]
+        problems = [problem["problem"] for problem in slides]
+        for i in range(len(problems)):
+            problems[i]["index"] = index[i]
+        for problem in problems:
+            answers[problem["index"]] = problem["answers"]
+        self.add_message(
+            f"{self.lessonname}:{data['title']} 的答案为" + str(answers), 0)
 
     def get_problems(self, presentationid):
         # 获取课程ppt中的题目
