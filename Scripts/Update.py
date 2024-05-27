@@ -56,7 +56,10 @@ class Update:
     def get_latest_version(self):
         # "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
         version_latest = "https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/version.txt"
-        version = requests.get(version_latest).text
+        try:
+            version = requests.get(version_latest).text
+        except:
+            version = requests.get(version_latest, verify=False).text
         if version.startswith("v"):
             version = version[1:]
         return Version(version)
@@ -90,8 +93,12 @@ class Update:
         os.system("python "+self.path+"update.py")
         sys.exit(0)
 
-    def have_new_version(self):
-        latest_version = self.get_latest_version()
+    def have_new_version(self, new_version):
+        latest_version = None
+        if (new_version is None):
+            latest_version = self.get_latest_version()
+        else:
+            latest_version = new_version
         current_version = get_version()
         return latest_version > current_version
 
@@ -181,7 +188,7 @@ class Version:
         return self.major == other.major and self.minor == other.minor and self.patch == other.patch and self.prerelease == other.prerelease
 
     def __str__(self):
-        return self.version
+        return self.version.rstrip()
 
 
 if __name__ == "__main__":

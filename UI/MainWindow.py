@@ -209,19 +209,26 @@ class MainWindow_Ui(QtCore.QObject):
         else:
             self.show_login()
 
+        # 多线程检查更新
+        threading.Thread(target=self.check_update, daemon=True).start()
+
+    def check_update(self):
         self.add_message_signal.emit("正在检查更新", 0)
         try:
             update = Update("./")
+            new_version = update.get_latest_version()
             self.add_message_signal.emit(
-                f"最新版本：{update.get_latest_version()}", 0)
+                f"最新版本：{new_version}", 0)
+            if (update.have_new_version(new_version)):
+                self.add_message_signal.emit(
+                    f"最新版本地址：https://github.com/travellerse/RainClassroomAssistant/releases/latest", 0)
+                if is_debug():
+                    updateBox = QtWidgets.QMessageBox.question(
+                        None, "发现新版本", f"发现新版本{update.get_latest_version()}，是否更新", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                    if updateBox == QtWidgets.QMessageBox.Yes:
+                        update.start()
         except:
             self.add_message_signal.emit("更新检查失败", 0)
-        if is_debug():
-            if (update.have_new_version()):
-                updateBox = QtWidgets.QMessageBox.question(
-                    None, "发现新版本", f"发现新版本{update.get_latest_version()}，是否更新", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
-                if updateBox == QtWidgets.QMessageBox.Yes:
-                    update.start()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

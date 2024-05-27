@@ -47,6 +47,11 @@ class Lesson:
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
             pdfname, usetime = PPTManager(data, self.lessonname).start()
+            if (pdfname is None or usetime is None):
+                if (is_debug()):
+                    self.add_message("重复下载ppt取消 : " + pdfname +
+                                     f"，耗时{usetime}秒", 0)
+                return
             self.add_message("下载ppt成功 : " + pdfname + f"，耗时{usetime}秒", 0)
         except Exception as e:
             self.add_message("下载ppt失败 : " + data["title"] + ".pdf", 0)

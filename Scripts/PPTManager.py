@@ -146,12 +146,12 @@ class PPTManager:
 
     def start(self):
         if self.title_dict.get(self.title) is None:
-            return None
+            return None, None
         self.download()
         pdfname = self.generate_ppt()
         self.delete_cache()
         usetime = round(time.time() - float(self.timestamp), 4)
-        self.title_dict.remove(self.title)
+        del self.title_dict[self.title]
         return pdfname, usetime
 
     def __eq__(self, __value: object) -> bool:
