@@ -39,7 +39,7 @@ def get_version():
 
 class Update:
     def __init__(self, path):
-        self.url = "https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/latest/download/RainClassroomAssistant.exe"
+        self.url = "https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/RainClassroomAssistant.exe"
         self.path = path
         self.filename = "RainClassroomAssistant.exe"
 
@@ -50,12 +50,15 @@ class Update:
             r"travellerse/rain-classroom-assistant-releases/releases/tag/.+?\"", r.text).group()
         tag = tag.split("/")[-1][:-1]
         print(tag)
-        self.url = f"https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/download/{tag}/RainClassroomAssistant.exe"
+        self.url = f"https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/RainClassroomAssistant.exe"
         print(self.url)
 
     def get_latest_version(self):
-        version_latest = "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
-        return Version(requests.get(version_latest).text)
+        # "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
+        version_latest = "https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/version.txt"
+        print(requests.get(version_latest, verify=False).text)
+        version = Version(requests.get(version_latest).text)
+        return version
 
     def release_update_script(self):
         with open(self.path+"update.py", "w") as f:
@@ -80,7 +83,7 @@ class Update:
             f.write(requests.get(self.url).content)
 
     def update(self):
-        self.get_url()
+        # self.get_url()
         self.download()
         self.release_update_script()
         os.system("python "+self.path+"update.py")
