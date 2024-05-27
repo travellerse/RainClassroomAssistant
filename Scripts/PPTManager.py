@@ -16,6 +16,7 @@ class PPTManager:
     def __init__(self, data, lessonname, downloadpath="downloads"):
         self.lessonname = lessonname
         self.title = data["title"].replace("/", "_").strip()
+        self.title_dict[self.title] = 1
         self.timestamp = str(time.time())
         self.timeinfo = time.strftime(
             "%Y%m%d-%H%M%S", time.localtime(float(self.timestamp)))
@@ -144,10 +145,13 @@ class PPTManager:
         os.rmdir(self.imgpath)
 
     def start(self):
+        if self.title_dict.get(self.title) is None:
+            return None
         self.download()
         pdfname = self.generate_ppt()
         self.delete_cache()
         usetime = round(time.time() - float(self.timestamp), 4)
+        self.title_dict.remove(self.title)
         return pdfname, usetime
 
     def __eq__(self, __value: object) -> bool:
