@@ -51,6 +51,7 @@ jobs:
         run: |
           version=$(python -c "import re; f = open('file_version_info.txt', 'r'); print('v'+re.search(\"u'FileVersion', u'.*'\",f.read()).group().split(\"'\")[3])")
           echo "::set-output name=version::$version"
+          echo $version > version.txt
       - name: download executable
         uses: actions/download-artifact@v3
         with:
@@ -65,7 +66,9 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./dist/RainClassroomAssistant.exe
+          files: |
+            ./dist/RainClassroomAssistant.exe
+            version.txt
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
