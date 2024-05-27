@@ -210,9 +210,12 @@ class MainWindow_Ui(QtCore.QObject):
             self.show_login()
 
         self.add_message_signal.emit("正在检查更新", 0)
-        update = Update("./")
-        self.add_message_signal.emit(
-            f"最新版本：{update.get_latest_version()}", 0)
+        try:
+            update = Update("./")
+            self.add_message_signal.emit(
+                f"最新版本：{update.get_latest_version()}", 0)
+        except:
+            self.add_message_signal.emit("更新检查失败", 0)
         if is_debug():
             if (update.have_new_version()):
                 updateBox = QtWidgets.QMessageBox.question(

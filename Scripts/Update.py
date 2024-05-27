@@ -56,9 +56,10 @@ class Update:
     def get_latest_version(self):
         # "https://gitee.com/travellerse/rain-classroom-assistant-releases/raw/master/version.txt"
         version_latest = "https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/version.txt"
-        print(requests.get(version_latest, verify=False).text)
-        version = Version(requests.get(version_latest).text)
-        return version
+        version = requests.get(version_latest).text
+        if version.startswith("v"):
+            version = version[1:]
+        return Version(version)
 
     def release_update_script(self):
         with open(self.path+"update.py", "w") as f:
