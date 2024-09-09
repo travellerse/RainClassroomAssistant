@@ -61,7 +61,7 @@ class PPTManager:
         download_thread = []
         div_num = int(len(self.slides)/self.threading_count)
         for i in range(0, len(self.slides), div_num):
-            slides = self.slides[i:i+div_num]
+            slides = self.slides[i:min(i+div_num, len(self.slides))]
             download_thread.append(
                 self.DownloadThread(slides, self.imgpath))
         for thread in download_thread:
