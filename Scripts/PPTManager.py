@@ -15,7 +15,7 @@ class PPTManager:
     title_dict = {}
 
     def __init__(self, data, lessonname, downloadpath="downloads"):
-        self.lessonname = lessonname
+        self.lessonname = self.validateTitle(lessonname)
         self.title = self.validateTitle(data["title"]).strip()
         self.title_dict[self.title] = 1
         self.timestamp = str(time.time())
@@ -36,7 +36,7 @@ class PPTManager:
         self.md5_list = []
         self.check_dir()
 
-    def validateTitle(title):
+    def validateTitle(self, title):
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
