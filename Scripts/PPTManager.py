@@ -1,11 +1,12 @@
 import hashlib
 import os
+import re
 import threading
 import time
 
+import PyPDF2
 import requests
 from fpdf import FPDF
-import PyPDF2
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -15,7 +16,7 @@ class PPTManager:
 
     def __init__(self, data, lessonname, downloadpath="downloads"):
         self.lessonname = lessonname
-        self.title = data["title"].replace("/", "_").strip()
+        self.title = self.validateTitle(data["title"]).strip()
         self.title_dict[self.title] = 1
         self.timestamp = str(time.time())
         self.timeinfo = time.strftime(
@@ -34,6 +35,11 @@ class PPTManager:
         self.height = data["height"]
         self.md5_list = []
         self.check_dir()
+
+    def validateTitle(title):
+        rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
+        new_title = re.sub(rstr, "_", title)  # 替换为下划线
+        return new_title
 
     def check_dir(self):
         if not os.path.exists(self.downloadpath):
