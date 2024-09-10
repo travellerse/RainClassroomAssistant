@@ -206,6 +206,9 @@ class MainWindow_Ui(QtCore.QObject):
             self.add_message_signal.emit(
                 "登录成功，当前登录用户：" + user_info["name"], 0
             )
+            self.add_message_signal.emit(
+                "当前登录：" + get_name(self.config["region"]), 0
+            )
         else:
             self.show_login()
 
@@ -307,6 +310,7 @@ class MainWindow_Ui(QtCore.QObject):
 
         # 登录成功返回1，其他情况返回0
         success = dialog.exec_()
+        print(success)
         if success:
             config_route = get_config_path()
             with open(config_route, "r") as f:
@@ -318,6 +322,9 @@ class MainWindow_Ui(QtCore.QObject):
         if status and success:
             self.add_message_signal.emit(
                 "登录成功，当前登录用户：" + user_info["name"], 0
+            )
+            self.add_message_signal.emit(
+                "当前登录：" + get_name(self.config["region"]), 0
             )
             self.login_btn.setText("重新登录")
         if not status and not _bool:

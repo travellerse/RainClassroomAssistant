@@ -11,8 +11,6 @@ from Scripts.PPTManager import PPTManager
 from Scripts.Utils import (calculate_waittime, dict_result, get_user_info,
                            is_debug, get_host)
 
-wss_url = f"wss://pro.yuketang.cn/wsapp/"
-
 
 class Lesson:
     def __init__(self, lessonid, lessonname, classroomid, main_ui):
@@ -36,7 +34,6 @@ class Lesson:
         self.del_course = main_ui.del_course_signal.emit
         self.config = main_ui.config
         self.region = self.config['region']
-        wss_url = f"wss://{get_host(self.config['region'])}/wsapp/"
         code, rtn = get_user_info(self.sessionid, self.config['region'])
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
@@ -370,7 +367,7 @@ class Lesson:
         index = self.main_ui.tableWidget.rowCount()
         self.add_course([self.lessonname, title, teacher, time_str], index)
         self.wsapp = websocket.WebSocketApp(
-            url=wss_url,
+            url=f"wss://{get_host(self.config['region'])}/wsapp/",
             header=self.headers,
             on_open=self.on_open,
             on_message=self.on_message,
@@ -425,8 +422,7 @@ class User:
 
     def get_userinfo(self, classroomid, headers):
         r = requests.get(
-            f"https://{get_host(self.config['region'])}/v/course_meta/fetch_user_info_new?query_user_id=%s&classroom_id=%s"
-            % (self.uid, classroomid),
+            f"https://{get_host(self.config['region'])}/v/course_meta/fetch_user_info_new?query_user_id={self.uid}&classroom_id={classroomid}",
             headers=headers,
             proxies={"http": None, "https": None},
         )

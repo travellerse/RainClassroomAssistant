@@ -202,6 +202,12 @@ def get_host(index):
     return host[int(index)]
 
 
+def get_name(index):
+    # 获取host
+    name = ["雨课堂", "荷塘雨课堂", "长江雨课堂", "黄河雨课堂"]
+    return name[int(index)]
+
+
 def resource_path(relative_path):
     # 解决打包exe的图片路径问题
     if getattr(sys, "frozen", False):

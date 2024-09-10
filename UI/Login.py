@@ -65,7 +65,8 @@ class Login_Ui(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.ComboBox = QtWidgets.QComboBox(self.widget_2)
         self.ComboBox.addItems(["雨课堂", "荷塘雨课堂", "长江雨课堂", "黄河雨课堂"])
-        self.ComboBox.currentIndexChanged.connect(self.refresh_wsapp)
+        self.ComboBox.currentIndexChanged.connect(
+            lambda: self.refresh_wsapp(Dialog))
 
         self.QRcode = QtWidgets.QLabel(self.widget_2)
         sizePolicy = QtWidgets.QSizePolicy(
