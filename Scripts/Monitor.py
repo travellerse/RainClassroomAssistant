@@ -24,7 +24,7 @@ def monitor(main_ui):
     while True:
         # 获取课程列表
         try:
-            lesson_list = get_on_lesson(sessionid)
+            lesson_list = get_on_lesson(sessionid, main_ui.config["region"])
             # lesson_list_old = get_on_lesson_old()
         except requests.exceptions.ConnectionError:
             meg = "网络异常，监听中断"
@@ -37,7 +37,8 @@ def monitor(main_ui):
             ret = test_network()
             if ret == True:
                 try:
-                    lesson_list = get_on_lesson(sessionid)
+                    lesson_list = get_on_lesson(
+                        sessionid, main_ui.config["region"])
                     # lesson_list_old = get_on_lesson_old()
                 except:
                     pass

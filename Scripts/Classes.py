@@ -9,9 +9,9 @@ import websocket
 
 from Scripts.PPTManager import PPTManager
 from Scripts.Utils import (calculate_waittime, dict_result, get_user_info,
-                           is_debug)
+                           is_debug, get_host)
 
-wss_url = "wss://pro.yuketang.cn/wsapp/"
+wss_url = f"wss://pro.yuketang.cn/wsapp/"
 
 
 class Lesson:
@@ -35,7 +35,9 @@ class Lesson:
         self.add_course = main_ui.add_course_signal.emit
         self.del_course = main_ui.del_course_signal.emit
         self.config = main_ui.config
-        code, rtn = get_user_info(self.sessionid)
+        self.region = self.config['region']
+        wss_url = f"wss://{get_host(self.config['region'])}/wsapp/"
+        code, rtn = get_user_info(self.sessionid, self.config['region'])
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
         self.main_ui = main_ui
@@ -65,8 +67,7 @@ class Lesson:
     def _get_ppt(self, presentationid):
         # 获取课程各页ppt
         r = requests.get(
-            url="https://pro.yuketang.cn/api/v3/lesson/presentation/fetch?presentation_id=%s"
-            % (presentationid),
+            url=f"https://{get_host(self.config['region'])}/api/v3/lesson/presentation/fetch?presentation_id=%{presentationid}",
             headers=self.headers,
             proxies={"http": None, "https": None},
         )
@@ -127,7 +128,7 @@ class Lesson:
                 "result": answer,
             }
             r = requests.post(
-                url="https://pro.yuketang.cn/api/v3/lesson/problem/answer",
+                url=f"https://{get_host(self.config['region'])}/api/v3/lesson/problem/answer",
                 headers=self.headers,
                 data=json.dumps(data),
                 proxies={"http": None, "https": None},
@@ -172,7 +173,7 @@ class Lesson:
 
     def checkin_class(self):
         r = requests.post(
-            url="https://pro.yuketang.cn/api/v3/lesson/checkin",
+            url=f"https://{get_host(self.config['region'])}/api/v3/lesson/checkin",
             headers=self.headers,
             data=json.dumps({"source": 5, "lessonId": self.lessonid}),
             proxies={"http": None, "https": None},
@@ -382,7 +383,7 @@ class Lesson:
         return callback(self)
 
     def send_danmu(self, content):
-        url = "https://pro.yuketang.cn/api/v3/lesson/danmu/send"
+        url = f"https://{get_host(self.config['region'])}/api/v3/lesson/danmu/send"
         data = {
             "extra": "",
             "fromStart": "50",
@@ -407,7 +408,7 @@ class Lesson:
         self.add_message(meg, 1)
 
     def get_lesson_info(self):
-        url = "https://pro.yuketang.cn/api/v3/lesson/basic-info"
+        url = f"https://{get_host(self.config['region'])}/api/v3/lesson/basic-info"
         r = requests.get(
             url=url, headers=self.headers, proxies={
                 "http": None, "https": None}
@@ -424,7 +425,7 @@ class User:
 
     def get_userinfo(self, classroomid, headers):
         r = requests.get(
-            "https://pro.yuketang.cn/v/course_meta/fetch_user_info_new?query_user_id=%s&classroom_id=%s"
+            f"https://{get_host(self.config['region'])}/v/course_meta/fetch_user_info_new?query_user_id=%s&classroom_id=%s"
             % (self.uid, classroomid),
             headers=headers,
             proxies={"http": None, "https": None},

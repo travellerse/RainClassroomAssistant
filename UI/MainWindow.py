@@ -358,7 +358,8 @@ class MainWindow_Ui(QtCore.QObject):
 
     def check_login(self):
         # 检查登录状态
-        code, user_info = get_user_info(self.config["sessionid"])
+        code, user_info = get_user_info(
+            self.config["sessionid"], self.config["region"])
         if code == 50000:
             return False, user_info
         elif code == 0:

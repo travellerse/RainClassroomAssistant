@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Scripts.Utils import dict_result, get_config_path, resource_path
+from Scripts.Utils import dict_result, get_config_path, resource_path, get_host
 import websocket
 import requests
 import json
@@ -63,6 +63,10 @@ class Login_Ui(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.ComboBox = QtWidgets.QComboBox(self.widget_2)
+        self.ComboBox.addItems(["雨课堂", "荷塘雨课堂", "长江雨课堂", "黄河雨课堂"])
+        self.ComboBox.currentIndexChanged.connect(self.refresh_wsapp)
+
         self.QRcode = QtWidgets.QLabel(self.widget_2)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
@@ -117,6 +121,12 @@ class Login_Ui(object):
                 time.sleep(1)
                 count += 1
 
+    def refresh_wsapp(self, Dialog):
+        # 刷新websocket连接
+        self.close_all()
+        self.wsapp_t.join()
+        self.start_wssapp(Dialog)
+
     def close_all(self):
         # 关闭websocket连接
         self.flush_on = False
@@ -126,11 +136,13 @@ class Login_Ui(object):
     def load_config(self, config):
         # 载入配置文件
         self.config = config
+        self.ComboBox.setCurrentIndex(int(config["region"]))
 
     def save(self, sessionid):
         # 保存sessionid
         config = self.config
         config["sessionid"] = sessionid
+        config["region"] = self.ComboBox.currentIndex()
         config_path = get_config_path()
         with open(config_path, "w+") as f:
             json.dump(config, f)
@@ -161,7 +173,7 @@ class Login_Ui(object):
                 self.QRcode.setPixmap(img_pixmap)
             # 扫码且登录成功
             elif data["op"] == "loginsuccess":
-                web_login_url = "https://pro.yuketang.cn/pc/web_login"
+                web_login_url = f"https://{get_host(self.ComboBox.currentIndex())}/pc/web_login"
                 login_data = {"UserID": data["UserID"], "Auth": data["Auth"]}
                 headers = {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0"
@@ -180,7 +192,7 @@ class Login_Ui(object):
                 self.save(sessionid)
                 Dialog.accept()
 
-        login_wss_url = "wss://pro.yuketang.cn/wsapp/"
+        login_wss_url = f"wss://{get_host(self.ComboBox.currentIndex())}/wsapp/"
         # 开启websocket线程和定时刷新二维码线程
         self.wsapp = websocket.WebSocketApp(
             url=login_wss_url, on_open=on_open, on_message=on_message, on_close=on_close

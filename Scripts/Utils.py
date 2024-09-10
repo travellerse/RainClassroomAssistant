@@ -112,6 +112,7 @@ def get_initial_data():
     # 默认配置信息
     initial_data = {
         "sessionid": "",
+        "region": "1",
         "auto_danmu": False,
         "danmu_config": {"danmu_limit": 5},
         "audio_on": True,
@@ -149,14 +150,14 @@ def get_config_dir():
     return dir_route
 
 
-def get_user_info(sessionid):
+def get_user_info(sessionid, region):
     # 获取用户信息
     headers = {
         "Cookie": "sessionid=%s" % sessionid,
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0",
     }
     r = requests.get(
-        url="https://pro.yuketang.cn/api/v3/user/basic-info",
+        url=f"https://{get_host(region)}/api/v3/user/basic-info",
         headers=headers,
         proxies={"http": None, "https": None},
     )
@@ -164,14 +165,14 @@ def get_user_info(sessionid):
     return (rtn["code"], rtn["data"])
 
 
-def get_on_lesson(sessionid):
+def get_on_lesson(sessionid, region):
     # 获取用户当前正在上课列表
     headers = {
         "Cookie": "sessionid=%s" % sessionid,
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0",
     }
     r = requests.get(
-        "https://pro.yuketang.cn/api/v3/classroom/on-lesson",
+        f"https://{get_host(region)}/api/v3/classroom/on-lesson",
         headers=headers,
         proxies={"http": None, "https": None},
     )
@@ -179,19 +180,26 @@ def get_on_lesson(sessionid):
     return rtn["data"]["onLessonClassrooms"]
 
 
-def get_on_lesson_old(sessionid):
+def get_on_lesson_old(sessionid, region):
     # 获取用户当前正在上课的列表（旧版）
     headers = {
         "Cookie": "sessionid=%s" % sessionid,
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0",
     }
     r = requests.get(
-        "https://pro.yuketang.cn/v/course_meta/on_lesson_courses",
+        f"https://{get_host(region)}/v/course_meta/on_lesson_courses",
         headers=headers,
         proxies={"http": None, "https": None},
     )
     rtn = dict_result(r.text)
     return rtn["on_lessons"]
+
+
+def get_host(index):
+    # 获取host
+    host = ["www.yuketang.cn", "pro.yuketang.cn",
+            "changjiang.yuketang.cn", "huanghe.yuketang.cn"]
+    return host[int(index)]
 
 
 def resource_path(relative_path):
