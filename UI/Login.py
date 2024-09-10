@@ -63,10 +63,6 @@ class Login_Ui(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.ComboBox = QtWidgets.QComboBox(self.widget_2)
-        self.ComboBox.addItems(["雨课堂", "荷塘雨课堂", "长江雨课堂", "黄河雨课堂"])
-        self.ComboBox.currentIndexChanged.connect(
-            lambda: self.refresh_wsapp(Dialog))
 
         self.QRcode = QtWidgets.QLabel(self.widget_2)
         sizePolicy = QtWidgets.QSizePolicy(
@@ -88,6 +84,18 @@ class Login_Ui(object):
         self.widget_3.setObjectName("widget_3")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.widget_3)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+
+        self.ComboBox = QtWidgets.QComboBox(self.widget_3)
+        self.ComboBox.addItems(["雨课堂", "荷塘雨课堂", "长江雨课堂", "黄河雨课堂"])
+        self.ComboBox.setObjectName("ComboBox")
+        self.ComboBox.setStyleSheet("QComboBox {background-color: white; color: black; border-radius: 3px;\
+                                     border-color: lightgray; border-style: solid; border-width:2px; padding-left:5px;} \
+                                     QComboBox::down-arrow {image: url(/usr/share/icons/breeze/actions/24/arrow-down)} \
+                                     QComboBox::drop-down {border:none;}")
+        self.ComboBox.currentIndexChanged.connect(
+            lambda: self.refresh_wsapp(Dialog))
+        self.verticalLayout_3.addWidget(self.ComboBox)
+
         self.login_return = QtWidgets.QLabel(self.widget_3)
         self.login_return.setText("")
         self.login_return.setObjectName("login_return")
