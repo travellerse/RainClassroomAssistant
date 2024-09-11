@@ -108,7 +108,7 @@ def calculate_waittime(limit, type, custom_percent=50):
     return int(wait_time)
 
 
-def get_initial_data():
+def get_initial_data(old_config=None):
     # 默认配置信息
     initial_data = {
         "sessionid": "",
@@ -134,6 +134,12 @@ def get_initial_data():
             "delay_time": {"type": 1, "custom": {"time": 20, "cutoff": 120}}
         },
     }
+
+    if (old_config):
+        for key in old_config:
+            if key in initial_data:
+                initial_data[key] = old_config[key]
+
     return initial_data
 
 

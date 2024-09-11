@@ -357,8 +357,14 @@ class MainWindow_Ui(QtCore.QObject):
                     self.add_message_signal.emit("配置文件已读取", 0)
                     return data
             except:
+                old_config = None
+                try:
+                    with open(config_route, "r") as f:
+                        old_config = json.load(f)
+                except:
+                    pass
                 with open(config_route, "w+") as f:
-                    initial_data = get_initial_data()
+                    initial_data = get_initial_data(old_config)
                     json.dump(initial_data, f)
                     self.add_message_signal.emit("配置文件读取失败，已重新生成", 0)
                     return initial_data
