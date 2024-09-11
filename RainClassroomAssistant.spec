@@ -42,5 +42,5 @@ app = BUNDLE(exe,
     name='RainClassroomAssistant.app',
     icon=None,
     bundle_identifier=None,
-    version='0.4.0',
+    version='0.4.1',
 )
