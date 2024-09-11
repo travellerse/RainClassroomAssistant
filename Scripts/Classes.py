@@ -64,7 +64,7 @@ class Lesson:
     def _get_ppt(self, presentationid):
         # 获取课程各页ppt
         r = requests.get(
-            url=f"https://{get_host(self.config['region'])}/api/v3/lesson/presentation/fetch?presentation_id=%{presentationid}",
+            url=f"https://{get_host(self.config['region'])}/api/v3/lesson/presentation/fetch?presentation_id={presentationid}",
             headers=self.headers,
             proxies={"http": None, "https": None},
         )
@@ -200,10 +200,12 @@ class Lesson:
                     ]
                 )
             )
+            print(data)
             current_presentation = data["presentation"]
             if current_presentation not in presentations:
                 presentations.append(current_presentation)
             for presentationid in presentations:
+                # print(presentationid)
                 self.problems_ls.extend(self.get_problems(presentationid))
                 for problem in self.problems_ls:
                     self.problems_dict[problem["index"]] = problem["answers"]
