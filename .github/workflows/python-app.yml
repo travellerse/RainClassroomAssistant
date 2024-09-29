@@ -20,7 +20,7 @@ jobs:
       executable_path: ./dist/RainClassroomAssistant.exe
     steps:
     - name: PyInstaller Action
-      uses: Martin005/pyinstaller-action@v1.2.0
+      uses: sayyid5416/pyinstaller@v1.6.1
       with:
         python_ver: '3.10'
         spec: 'RainClassroomAssistant.spec'
@@ -35,7 +35,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: PyInstaller Action
-      uses: Martin005/pyinstaller-action@v1.2.0
+      uses: sayyid5416/pyinstaller@v1.6.1
       with:
         python_ver: '3.10'
         spec: 'RainClassroomAssistant.spec'
