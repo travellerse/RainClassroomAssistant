@@ -34,6 +34,7 @@ jobs:
 
   pyinstaller-build-ios:
     runs-on: macos-latest
+    if: false
     steps:
     - name: PyInstaller Action
       uses: sayyid5416/pyinstaller@v1.6.1
@@ -49,7 +50,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [pyinstaller-build, pyinstaller-build-ios]
+    needs: [pyinstaller-build]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
