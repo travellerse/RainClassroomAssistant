@@ -31,10 +31,8 @@ jobs:
         name: RainClassroomAssistant
         path: ./dist/RainClassroomAssistant.exe
 
-  
   pyinstaller-build-ios:
     runs-on: macos-latest
-    if: false
     steps:
     - name: PyInstaller Action
       uses: Martin005/pyinstaller-action@v1.2.0
@@ -42,11 +40,15 @@ jobs:
         python_ver: '3.10'
         spec: 'RainClassroomAssistant.spec'
         requirements: 'requirements.txt'
-        upload_exe_with_name: 'RainClassroomAssistant'
+    - name: Upload Executable
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: RainClassroomAssistant
+        path: ./dist/RainClassroomAssistant
 
   release:
     runs-on: ubuntu-latest
-    needs: [pyinstaller-build]
+    needs: [pyinstaller-build, pyinstaller-build-ios]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,22 +63,35 @@ jobs:
         with:
           name: RainClassroomAssistant
           path: ./dist
-      - name: calulate hash
-        id: hash
+      - name: download ios executable
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: RainClassroomAssistant
+          path: ./dist
+      - name: calculate hash for Windows executable
+        id: hash_windows
         run: |
           hash=$(sha256sum ./dist/RainClassroomAssistant.exe | cut -d ' ' -f 1)
-          echo "::set-output name=hash::$hash"
+          echo "::set-output name=hash_windows::$hash"
+      - name: calculate hash for iOS executable
+        id: hash_ios
+        run: |
+          hash=$(sha256sum ./dist/RainClassroomAssistant | cut -d ' ' -f 1)
+          echo "::set-output name=hash_ios::$hash"
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             ./dist/RainClassroomAssistant.exe
+            ./dist/RainClassroomAssistant
             version.txt
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
             ## hash256
-            - RainClassroomAssistant.exe: ${{ steps.hash.outputs.hash }}
+            - RainClassroomAssistant.exe: ${{ steps.hash_windows.outputs.hash_windows }}
+
+            - RainClassroomAssistant (iOS): ${{ steps.hash_ios.outputs.hash_ios }}
           draft: false
           prerelease: false
