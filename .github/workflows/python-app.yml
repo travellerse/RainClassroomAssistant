@@ -9,6 +9,7 @@ on:
       - 'file_version_info.txt'
       - 'RainClassroomAssistant.spec'
       - 'python-app.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
