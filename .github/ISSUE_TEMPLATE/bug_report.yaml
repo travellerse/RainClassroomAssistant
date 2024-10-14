@@ -35,6 +35,7 @@ body:
         - 荷塘雨课堂
         - 长江雨课堂
         - 黄河雨课堂
+      default: 雨课堂
     validations:
       required: true
   - type: textarea
