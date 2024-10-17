@@ -355,6 +355,12 @@ class Lesson:
         timestamp = rtn["startTime"] // 1000
         time_str = time.strftime(
             "%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
+        index = self.main_ui.tableWidget.rowCount()
+        self.add_course([self.lessonname, title, teacher, time_str], index)
+        if (self.lessonname.find("清华实践") != -1):
+            meg = "%s测试课程，不进行监听" % self.lessonname
+            self.add_message(meg, 7)
+            return callback(self)
         if (
             int(time.time()) - timestamp
             <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"]
@@ -365,9 +371,7 @@ class Lesson:
             time.sleep(delay)
         else:
             meg = f"检测到课程{self.lessonname}正在上课，已加入监听列表"
-        self.add_message(meg, 7)
-        index = self.main_ui.tableWidget.rowCount()
-        self.add_course([self.lessonname, title, teacher, time_str], index)
+            self.add_message(meg, 7)
         self.wsapp = websocket.WebSocketApp(
             url=f"wss://{get_host(self.config['region'])}/wsapp/",
             header=self.headers,

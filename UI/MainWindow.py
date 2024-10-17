@@ -255,6 +255,15 @@ class MainWindow_Ui(QtCore.QObject):
     def add_course(self, row, row_count):
         # 添加课程
         # 注意：在非UI运行线程中调用该方法请对add_course_signal发送信号
+
+        # 检查是否已经存在相同的课程
+        for i in range(self.tableWidget.rowCount()):
+            existing_row = [self.tableWidget.item(i, j).text(
+            ) for j in range(self.tableWidget.columnCount())]
+            if existing_row == row:
+                self.add_message_signal.emit("课程已存在，未添加重复课程", 0)
+                return
+
         self.tableWidget.insertRow(row_count)
         # 装填当前行各列数据
         for i in range(len(row)):
