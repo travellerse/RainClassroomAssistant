@@ -5,6 +5,8 @@ name: Python application
 
 on:
   push:
+    branches:
+      - master
     paths: 
       - 'file_version_info.txt'
       - 'RainClassroomAssistant.spec'
