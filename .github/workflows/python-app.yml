@@ -9,6 +9,7 @@ on:
       - 'file_version_info.txt'
       - 'RainClassroomAssistant.spec'
       - 'python-app.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -33,6 +34,7 @@ jobs:
 
   pyinstaller-build-ios:
     runs-on: macos-latest
+    if: false
     steps:
     - name: PyInstaller Action
       uses: sayyid5416/pyinstaller@v1.6.1
@@ -48,7 +50,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [pyinstaller-build, pyinstaller-build-ios]
+    needs: [pyinstaller-build]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,35 +65,29 @@ jobs:
         with:
           name: RainClassroomAssistant
           path: ./dist
-      - name: download ios executable
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: RainClassroomAssistant
-          path: ./dist
       - name: calculate hash for Windows executable
         id: hash_windows
         run: |
           hash=$(sha256sum ./dist/RainClassroomAssistant.exe | cut -d ' ' -f 1)
           echo "::set-output name=hash_windows::$hash"
-      - name: calculate hash for iOS executable
-        id: hash_ios
+      - name: Get Commit Messages
+        id: commit_messages
         run: |
-          hash=$(sha256sum ./dist/RainClassroomAssistant | cut -d ' ' -f 1)
-          echo "::set-output name=hash_ios::$hash"
+          commits=$(git log -1 --pretty=format:"%s")
+          echo "::set-output name=commits::$commits"
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             ./dist/RainClassroomAssistant.exe
-            ./dist/RainClassroomAssistant
             version.txt
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
             ## hash256
             - RainClassroomAssistant.exe: ${{ steps.hash_windows.outputs.hash_windows }}
-
-            - RainClassroomAssistant (iOS): ${{ steps.hash_ios.outputs.hash_ios }}
+            ## Commits
+            - ${{ steps.commit_messages.outputs.commits }}
           draft: false
           prerelease: false
