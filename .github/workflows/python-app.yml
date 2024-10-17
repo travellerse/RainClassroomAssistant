@@ -87,7 +87,5 @@ jobs:
           body: |
             ## hash256
             - RainClassroomAssistant.exe: ${{ steps.hash_windows.outputs.hash_windows }}
-            ## Commits
-            - ${{ steps.commit_messages.outputs.commits }}
           draft: false
           prerelease: false
