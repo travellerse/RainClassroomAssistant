@@ -8,8 +8,13 @@ import requests
 import websocket
 
 from Scripts.PPTManager import PPTManager
-from Scripts.Utils import (calculate_waittime, dict_result, get_user_info,
-                           is_debug, get_host)
+from Scripts.Utils import (
+    calculate_waittime,
+    dict_result,
+    get_user_info,
+    is_debug,
+    get_host,
+)
 
 
 class Lesson:
@@ -33,8 +38,8 @@ class Lesson:
         self.add_course = main_ui.add_course_signal.emit
         self.del_course = main_ui.del_course_signal.emit
         self.config = main_ui.config
-        self.region = self.config['region']
-        code, rtn = get_user_info(self.sessionid, self.config['region'])
+        self.region = self.config["region"]
+        code, rtn = get_user_info(self.sessionid, self.config["region"])
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
         self.main_ui = main_ui
@@ -46,10 +51,11 @@ class Lesson:
         self.add_message("开始下载ppt : " + data["title"] + ".pdf", 0)
         try:
             pdfname, usetime = PPTManager(data, self.lessonname).start()
-            if (pdfname is None or usetime is None):
-                if (is_debug()):
-                    self.add_message("重复下载ppt取消 : " + pdfname +
-                                     f"，耗时{usetime}秒", 0)
+            if pdfname is None or usetime is None:
+                if is_debug():
+                    self.add_message(
+                        "重复下载ppt取消 : " + pdfname + f"，耗时{usetime}秒", 0
+                    )
                 return
             self.add_message("下载ppt成功 : " + pdfname + f"，耗时{usetime}秒", 0)
         except Exception as e:
@@ -72,8 +78,7 @@ class Lesson:
 
     def print_problems(self, data):
         answers = {}
-        slides = [problem for problem in data["slides"]
-                  if "problem" in problem.keys()]
+        slides = [problem for problem in data["slides"] if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
         for i in range(len(problems)):
@@ -81,13 +86,13 @@ class Lesson:
         for problem in problems:
             answers[problem["index"]] = problem["answers"]
         self.add_message(
-            f"{self.lessonname}:{data['title']} 的答案为" + str(answers), 0)
+            f"{self.lessonname}:{data['title']} 的答案为" + str(answers), 0
+        )
 
     def get_problems(self, presentationid):
         # 获取课程ppt中的题目
         data = self._get_ppt(presentationid)
-        slides = [problem for problem in data["slides"]
-                  if "problem" in problem.keys()]
+        slides = [problem for problem in data["slides"] if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
         for i in range(len(problems)):
@@ -320,8 +325,7 @@ class Lesson:
                     answers = promble.get("answers", [])
                 threading.Thread(
                     target=self.answer_questions,
-                    args=(promble["problemId"],
-                          promble["problemType"], answers, limit),
+                    args=(promble["problemId"], promble["problemType"], answers, limit),
                 ).start()
                 break
         else:
@@ -353,11 +357,10 @@ class Lesson:
         teacher = rtn["teacher"]["name"]
         title = rtn["title"]
         timestamp = rtn["startTime"] // 1000
-        time_str = time.strftime(
-            "%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
+        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
         index = self.main_ui.tableWidget.rowCount()
         self.add_course([self.lessonname, title, teacher, time_str], index)
-        if (self.lessonname.find("清华实践") != -1):
+        if self.lessonname.find("清华实践") != -1:
             meg = "%s测试课程，不进行监听" % self.lessonname
             self.add_message(meg, 7)
             return callback(self)
@@ -413,8 +416,7 @@ class Lesson:
     def get_lesson_info(self):
         url = f"https://{get_host(self.config['region'])}/api/v3/lesson/basic-info"
         r = requests.get(
-            url=url, headers=self.headers, proxies={
-                "http": None, "https": None}
+            url=url, headers=self.headers, proxies={"http": None, "https": None}
         )
         return dict_result(r.text)["data"]
 

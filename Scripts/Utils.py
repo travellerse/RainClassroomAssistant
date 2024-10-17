@@ -135,7 +135,7 @@ def get_initial_data(old_config=None):
         },
     }
 
-    if (old_config):
+    if old_config:
         for key in old_config:
             if key in initial_data:
                 initial_data[key] = old_config[key]
@@ -203,8 +203,12 @@ def get_on_lesson_old(sessionid, region):
 
 def get_host(index):
     # 获取host
-    host = ["www.yuketang.cn", "pro.yuketang.cn",
-            "changjiang.yuketang.cn", "huanghe.yuketang.cn"]
+    host = [
+        "www.yuketang.cn",
+        "pro.yuketang.cn",
+        "changjiang.yuketang.cn",
+        "huanghe.yuketang.cn",
+    ]
     return host[int(index)]
 
 

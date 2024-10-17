@@ -39,8 +39,7 @@ class MainWindow_Ui(QtCore.QObject):
         MainWindow.resize(800, 700)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: rgb(255, 255, 255);")
-        MainWindow.setWindowIcon(QtGui.QIcon(
-            resource_path("UI\\Image\\favicon.ico")))
+        MainWindow.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
         self.Window = QtWidgets.QWidget(MainWindow)
         self.Window.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.Window.setObjectName("Window")
@@ -60,8 +59,7 @@ class MainWindow_Ui(QtCore.QObject):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setMaximumSize(QtCore.QSize(32, 32))
         self.label.setStyleSheet("border-radius:10px;\n" "")
@@ -73,8 +71,7 @@ class MainWindow_Ui(QtCore.QObject):
         self.label.setObjectName("label")
         self.horizontalLayout_3.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.Menu)
-        self.label_2.setStyleSheet(
-            "color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
+        self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_3.addWidget(self.label_2)
         spacerItem = QtWidgets.QSpacerItem(
@@ -122,14 +119,11 @@ class MainWindow_Ui(QtCore.QObject):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.tableWidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy)
         self.tableWidget.setStyleSheet('font: 9pt "微软雅黑";')
-        self.tableWidget.setEditTriggers(
-            QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(0)
@@ -220,14 +214,20 @@ class MainWindow_Ui(QtCore.QObject):
         try:
             update = Update("./")
             new_version = update.get_latest_version()
-            self.add_message_signal.emit(
-                f"最新版本：{new_version}", 0)
-            if (update.have_new_version(new_version)):
+            self.add_message_signal.emit(f"最新版本：{new_version}", 0)
+            if update.have_new_version(new_version):
                 self.add_message_signal.emit(
-                    f"最新版本地址：https://github.com/travellerse/RainClassroomAssistant/releases/latest", 0)
+                    f"最新版本地址：https://github.com/travellerse/RainClassroomAssistant/releases/latest",
+                    0,
+                )
                 if is_debug():
                     updateBox = QtWidgets.QMessageBox.question(
-                        None, "发现新版本", f"发现新版本{update.get_latest_version()}，是否更新", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                        None,
+                        "发现新版本",
+                        f"发现新版本{update.get_latest_version()}，是否更新",
+                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                        QtWidgets.QMessageBox.Yes,
+                    )
                     if updateBox == QtWidgets.QMessageBox.Yes:
                         update.start()
         except:
@@ -258,8 +258,10 @@ class MainWindow_Ui(QtCore.QObject):
 
         # 检查是否已经存在相同的课程
         for i in range(self.tableWidget.rowCount()):
-            existing_row = [self.tableWidget.item(i, j).text(
-            ) for j in range(self.tableWidget.columnCount())]
+            existing_row = [
+                self.tableWidget.item(i, j).text()
+                for j in range(self.tableWidget.columnCount())
+            ]
             if existing_row == row:
                 self.add_message_signal.emit("课程已存在，未添加重复课程", 0)
                 return
@@ -380,8 +382,7 @@ class MainWindow_Ui(QtCore.QObject):
 
     def check_login(self):
         # 检查登录状态
-        code, user_info = get_user_info(
-            self.config["sessionid"], self.config["region"])
+        code, user_info = get_user_info(self.config["sessionid"], self.config["region"])
         if code == 50000:
             return False, user_info
         elif code == 0:
@@ -403,8 +404,7 @@ class MainWindow_Ui(QtCore.QObject):
 
     def active(self):
         # 启动
-        self.monitor_t = threading.Thread(
-            target=monitor, args=(self,), daemon=True)
+        self.monitor_t = threading.Thread(target=monitor, args=(self,), daemon=True)
         self.monitor_t.start()
         self.is_active = True
         self.active_btn.setText("停止监听")

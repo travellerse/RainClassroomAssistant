@@ -20,7 +20,8 @@ class PPTManager:
         self.title_dict[self.title] = 1
         self.timestamp = str(time.time())
         self.timeinfo = time.strftime(
-            "%Y%m%d-%H%M%S", time.localtime(float(self.timestamp)))
+            "%Y%m%d-%H%M%S", time.localtime(float(self.timestamp))
+        )
         self.downloadpath = downloadpath
 
         self.lessondownloadpath = downloadpath + "\\" + self.lessonname
@@ -59,19 +60,17 @@ class PPTManager:
 
     def download(self):
         download_thread = []
-        div_num = int(len(self.slides)/self.threading_count)
+        div_num = int(len(self.slides) / self.threading_count)
         for i in range(0, len(self.slides), div_num):
-            slides = self.slides[i:min(i+div_num, len(self.slides))]
-            download_thread.append(
-                self.DownloadThread(slides, self.imgpath))
+            slides = self.slides[i : min(i + div_num, len(self.slides))]
+            download_thread.append(self.DownloadThread(slides, self.imgpath))
         for thread in download_thread:
             thread.start()
         for thread in download_thread:
             thread.join()
 
     def get_problems(self):
-        slides = [problem for problem in self.slides
-                  if "problem" in problem.keys()]
+        slides = [problem for problem in self.slides if "problem" in problem.keys()]
         index = [problem["index"] for problem in slides]
         problems = [problem["problem"] for problem in slides]
         for i in range(len(problems)):
@@ -96,16 +95,14 @@ class PPTManager:
     def generate_ppt(self):
         pdf_name = self.title + ".pdf"
         for slide in self.slides:
-            image_name = self.imgpath + \
-                "\\" + str(slide["index"]) + ".jpg"
+            image_name = self.imgpath + "\\" + str(slide["index"]) + ".jpg"
             md5 = self.get_md5(image_name)
             self.md5_list.append(md5)
             if "problem" in slide.keys():
                 problem = slide["problem"]
                 # print(problem)
                 img = Image.open(image_name)
-                font = ImageFont.truetype(
-                    "C:\\Windows\\Fonts\\msyh.ttc", 30)
+                font = ImageFont.truetype("C:\\Windows\\Fonts\\msyh.ttc", 30)
                 draw = ImageDraw.Draw(img)
                 draw.text(
                     (50, 50),
@@ -118,16 +115,16 @@ class PPTManager:
             for md5 in self.md5_list:
                 f.write(md5 + "\n")
         hash = self.get_sha256(self.imgpath + "\\md5.txt")
-        print(self.title+":"+hash)
+        print(self.title + ":" + hash)
         for pdf in os.scandir(self.downloadpath):
             if pdf.path == self.downloadpath + "\\" + pdf_name:
-                os.replace(pdf.path, self.lessondownloadpath +
-                           "\\" + pdf_name)
+                os.replace(pdf.path, self.lessondownloadpath + "\\" + pdf_name)
         for pdf in os.scandir(self.lessondownloadpath):
             if pdf.name.endswith(".pdf"):
                 try:
-                    keywords = PyPDF2.PdfReader(
-                        open(pdf.path, "rb")).metadata.get("/Keywords")
+                    keywords = PyPDF2.PdfReader(open(pdf.path, "rb")).metadata.get(
+                        "/Keywords"
+                    )
                     if hash == keywords:
                         return pdf.name
                 except Exception as e:
@@ -136,8 +133,7 @@ class PPTManager:
         ppt.set_keywords(hash)
         ppt.set_author("RainClassroom")
         for slide in self.slides:
-            image_name = self.imgpath + \
-                "\\" + str(slide["index"]) + ".jpg"
+            image_name = self.imgpath + "\\" + str(slide["index"]) + ".jpg"
             ppt.add_page()
             ppt.image(image_name, 0, 0, h=self.height, w=self.width)
         if os.path.exists(self.lessondownloadpath + "\\" + pdf_name):
@@ -161,7 +157,7 @@ class PPTManager:
         return pdfname, usetime
 
     def __eq__(self, __value: object) -> bool:
-        if (self.title != __value.title):
+        if self.title != __value.title:
             return False
         else:
             return self.slides == __value.slides
@@ -193,20 +189,16 @@ if __name__ == "__main__":
             {
                 "index": 1,
                 "cover": "https://rainclass.oss-cn-shanghai.aliyuncs.com/cover/2021/09/17/1631861003.jpg",
-                "problem": {
-                    "answers": [1, 2, 3, 4]
-                }
+                "problem": {"answers": [1, 2, 3, 4]},
             },
             {
                 "index": 2,
                 "cover": "https://rainclass.oss-cn-shanghai.aliyuncs.com/cover/2021/09/17/1631861003.jpg",
-                "problem": {
-                    "answers": [1, 2, 3, 4]
-                }
-            }
+                "problem": {"answers": [1, 2, 3, 4]},
+            },
         ],
         "width": 1920,
-        "height": 1080
+        "height": 1080,
     }
 
     def get_time(function):
@@ -215,7 +207,9 @@ if __name__ == "__main__":
             function(ppt.cachepath + "\\" + image)
         end_time = time.time()
         print(function.__name__)
-        print(f"{end_time - start_time}/{len(os.listdir(ppt.cachepath))}={(end_time - start_time)/len(os.listdir(ppt.cachepath))}")
+        print(
+            f"{end_time - start_time}/{len(os.listdir(ppt.cachepath))}={(end_time - start_time)/len(os.listdir(ppt.cachepath))}"
+        )
         print("----------------------------------------------------------------")
 
     downloadpath = "downloads"

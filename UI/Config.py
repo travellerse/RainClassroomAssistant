@@ -23,34 +23,27 @@ class Config_Ui(object):
         Dialog.setStyleSheet(
             "background-color: rgb(255, 255, 255);\n" 'font: 9pt "微软雅黑";'
         )
-        Dialog.setWindowIcon(QtGui.QIcon(
-            resource_path("UI\\Image\\favicon.ico")))
+        Dialog.setWindowIcon(QtGui.QIcon(resource_path("UI\\Image\\favicon.ico")))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.scrollArea = QtWidgets.QScrollArea(Dialog)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(
-            QtCore.QRect(0, -56, 393, 580))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -56, 393, 580))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_12 = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents)
+        self.verticalLayout_12 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
 
         self.sign_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
         self.sign_config.setObjectName("sign_config")
-        self.verticalLayout_sign_config = QtWidgets.QVBoxLayout(
-            self.sign_config)
-        self.verticalLayout_sign_config.setObjectName(
-            "verticalLayout_sign_config")
+        self.verticalLayout_sign_config = QtWidgets.QVBoxLayout(self.sign_config)
+        self.verticalLayout_sign_config.setObjectName("verticalLayout_sign_config")
         self.when_delay_on = QtWidgets.QWidget(self.sign_config)
         self.when_delay_on.setEnabled(True)
         self.when_delay_on.setObjectName("when_delay_on")
-        self.verticalLayout_when_delay_on = QtWidgets.QVBoxLayout(
-            self.when_delay_on)
-        self.verticalLayout_when_delay_on.setObjectName(
-            "verticalLayout_when_delay_on")
+        self.verticalLayout_when_delay_on = QtWidgets.QVBoxLayout(self.when_delay_on)
+        self.verticalLayout_when_delay_on.setObjectName("verticalLayout_when_delay_on")
         self.label_9 = QtWidgets.QLabel(self.when_delay_on)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_when_delay_on.addWidget(self.label_9)
@@ -254,8 +247,7 @@ class Config_Ui(object):
         self.delay_time_radio_2.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_3.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_4.clicked.connect(self.enable_delay_custom)
-        self.save.clicked.connect(functools.partial(
-            self.save_config, dialog=Dialog))
+        self.save.clicked.connect(functools.partial(self.save_config, dialog=Dialog))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -315,8 +307,7 @@ class Config_Ui(object):
         self.danmu_spinBox.setValue(config["danmu_config"]["danmu_limit"])
         # 语音配置
         self.audio_on.setChecked(config["audio_on"])
-        self.self_danmu.setChecked(
-            config["audio_config"]["audio_type"]["send_danmu"])
+        self.self_danmu.setChecked(config["audio_config"]["audio_type"]["send_danmu"])
         self.others_danmu.setChecked(
             config["audio_config"]["audio_type"]["others_danmu"]
         )
@@ -326,15 +317,12 @@ class Config_Ui(object):
         self.answer_result.setChecked(
             config["audio_config"]["audio_type"]["answer_result"]
         )
-        self.self_called.setChecked(
-            config["audio_config"]["audio_type"]["im_called"])
+        self.self_called.setChecked(config["audio_config"]["audio_type"]["im_called"])
         self.others_called.setChecked(
             config["audio_config"]["audio_type"]["others_called"]
         )
-        self.course.setChecked(
-            config["audio_config"]["audio_type"]["course_info"])
-        self.network.setChecked(
-            config["audio_config"]["audio_type"]["network_info"])
+        self.course.setChecked(config["audio_config"]["audio_type"]["course_info"])
+        self.network.setChecked(config["audio_config"]["audio_type"]["network_info"])
         # 答题配置
         self.answer_on.setChecked(config["auto_answer"])
         if config["answer_config"]["answer_delay"]["type"] == 1:

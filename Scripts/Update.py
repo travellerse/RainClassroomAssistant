@@ -15,15 +15,11 @@ def get_version():
     if is_debug():
         with open("file_version_info.txt", "r") as f:
             version_info = f.read()
-        version = (
-            re.search("u'FileVersion', u'.*'",
-                      version_info).group().split("'")[3]
-        )
+        version = re.search("u'FileVersion', u'.*'", version_info).group().split("'")[3]
     else:
         if sys.platform.startswith("win"):
             info = win32api.GetFileVersionInfo(
-                win32api.GetModuleFileName(
-                    win32api.GetModuleHandle(None)), "\\"
+                win32api.GetModuleFileName(win32api.GetModuleHandle(None)), "\\"
             )  # 获取文件版本信息
             ms = info["FileVersionMS"]
             ls = info["FileVersionLS"]
@@ -32,7 +28,7 @@ def get_version():
                 win32api.LOWORD(ms),
                 win32api.HIWORD(ls),
             )
-        elif (sys.platform == "darwin"):
+        elif sys.platform == "darwin":
             version = "0.3.5"
     return Version(version)  # 获取文件版本号
 
@@ -47,7 +43,8 @@ class Update:
         tag_url = "https://gitee.com/travellerse/rain-classroom-assistant-releases/releases/latest"
         r = requests.get(tag_url)
         tag = re.search(
-            r"travellerse/rain-classroom-assistant-releases/releases/tag/.+?\"", r.text).group()
+            r"travellerse/rain-classroom-assistant-releases/releases/tag/.+?\"", r.text
+        ).group()
         tag = tag.split("/")[-1][:-1]
         print(tag)
         self.url = f"https://github.com/travellerse/RainClassroomAssistant/releases/latest/download/RainClassroomAssistant.exe"
@@ -65,7 +62,7 @@ class Update:
         return Version(version)
 
     def release_update_script(self):
-        with open(self.path+"update.py", "w") as f:
+        with open(self.path + "update.py", "w") as f:
             f.write(
                 "import os\n"
                 "import time\n"
@@ -83,19 +80,19 @@ class Update:
             )
 
     def download(self):
-        with open(self.path+"_"+self.filename, "wb") as f:
+        with open(self.path + "_" + self.filename, "wb") as f:
             f.write(requests.get(self.url).content)
 
     def update(self):
         # self.get_url()
         self.download()
         self.release_update_script()
-        os.system("python "+self.path+"update.py")
+        os.system("python " + self.path + "update.py")
         sys.exit(0)
 
     def have_new_version(self, new_version):
         latest_version = None
-        if (new_version is None):
+        if new_version is None:
             latest_version = self.get_latest_version()
         else:
             latest_version = new_version
@@ -185,7 +182,12 @@ class Version:
         return False
 
     def __eq__(self, other):
-        return self.major == other.major and self.minor == other.minor and self.patch == other.patch and self.prerelease == other.prerelease
+        return (
+            self.major == other.major
+            and self.minor == other.minor
+            and self.patch == other.patch
+            and self.prerelease == other.prerelease
+        )
 
     def __str__(self):
         return self.version.rstrip()

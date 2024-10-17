@@ -37,8 +37,7 @@ def monitor(main_ui):
             ret = test_network()
             if ret == True:
                 try:
-                    lesson_list = get_on_lesson(
-                        sessionid, main_ui.config["region"])
+                    lesson_list = get_on_lesson(sessionid, main_ui.config["region"])
                     # lesson_list_old = get_on_lesson_old()
                 except:
                     pass
