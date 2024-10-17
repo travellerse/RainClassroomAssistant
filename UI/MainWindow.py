@@ -10,9 +10,11 @@
 
 import datetime
 import json
+import logging
 import os
 import re
 import threading
+import traceback
 
 from deepdiff import DeepDiff
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -296,6 +298,7 @@ class MainWindow_Ui(QtCore.QObject):
             # 加载配置文件
             config_ui.load_config(self.config)
         except:
+            self.add_message_signal.emit(traceback.format_exc(), 0)
             dir_route = get_config_dir()
             config_route = get_config_path()
             self.config = self.check_config(dir_route, config_route)
@@ -364,6 +367,7 @@ class MainWindow_Ui(QtCore.QObject):
                             key == "dictionary_item_added"
                             or key == "dictionary_item_removed"
                         ):
+                            self.add_message_signal.emit(info, 0)
                             raise Exception
                     self.add_message_signal.emit("配置文件已读取", 0)
                     return data
@@ -392,6 +396,7 @@ class MainWindow_Ui(QtCore.QObject):
         # 新增输出信息，并尝试语音播报
         time = datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S] ")
         self.output_textarea.append(time + message)
+        logging.info(message)
         if not type == 0:
             self.audio(message, type)
 

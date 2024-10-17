@@ -1,6 +1,7 @@
 import random
 import threading
 import time
+import traceback
 
 import requests
 
@@ -30,8 +31,9 @@ def monitor(main_ui):
             meg = "网络异常，监听中断"
             main_ui.add_message_signal.emit(meg, 8)
             network_status = False
+            main_ui.add_message_signal.emit(traceback.format_exc(), 0)
         except Exception:
-            pass
+            main_ui.add_message_signal.emit(traceback.format_exc(), 0)
         # 网络异常处理
         while not network_status:
             ret = test_network()
@@ -40,7 +42,7 @@ def monitor(main_ui):
                     lesson_list = get_on_lesson(sessionid, main_ui.config["region"])
                     # lesson_list_old = get_on_lesson_old()
                 except:
-                    pass
+                    main_ui.add_message_signal.emit(traceback.format_exc(), 0)
                 else:
                     network_status = True
                     meg = "网络已恢复，监听开始"
