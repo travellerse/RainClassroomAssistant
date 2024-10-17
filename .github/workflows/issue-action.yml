@@ -1,0 +1,43 @@
+name: issue-action
+
+on:
+  schedule:
+    - cron: "0 0 */7 * *"
+
+jobs:
+  check-need-info:
+    id: check-need-info
+    runs-on: ubuntu-latest
+    steps:
+      - name: close-issues
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'close-issues'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          labels: 'need more info'
+          inactive-day: 15
+          body: |
+            由于该 issue 被标记为需要更多信息，却 15 天未收到回应。现关闭 issue，若有任何问题，可评论回复。
+
+            Since the issue was labeled as "need more info" but no response was received for 15 days. Now close the issue. If you have any questions, feel free to comment.
+  issue-remove-inactive:
+    id: issue-remove-inactive
+    runs-on: ubuntu-latest
+    steps:
+      - name: remove inactive
+        # 当前 issue 是打开状态, 并且是楼主触发的更新
+        if: github.event.issue.state == 'open' && github.actor == github.event.issue.user.login
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'remove-labels'
+          issue-number: ${{ github.event.issue.number }}
+          labels: 'inactive'
+  check-inactive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check-inactive
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'check-inactive'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inactive-day: 30
