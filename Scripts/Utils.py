@@ -131,7 +131,7 @@ def get_initial_data(old_config=None):
         "auto_answer": True,
         "answer_config": {"answer_delay": {"type": 1, "custom": {"percent": 50}}},
         "sign_config": {
-            "delay_time": {"type": 1, "custom": {"time": 20, "cutoff": 120}}
+            "delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}
         },
     }
 
