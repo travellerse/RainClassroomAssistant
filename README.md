@@ -1,6 +1,6 @@
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > ~~Only 荷塘雨课堂~~（v0.4.0已适配全部4种雨课堂）
-> 
+>
 > 咕了，等待重构
 
 # RainClassroomAssistant
@@ -25,3 +25,12 @@
 1. **使用前最好关闭所有代理程序，否则程序可能无法正常使用**
 ### 使用程序
 v0.0.3版本，更新UI，此后版本双击打开即可使用！
+### 打包程序
+1. 安装pyinstaller(已包含在requirements.txt中)
+```shell
+pip install pyinstaller
+```
+2. 使用配置文件打包
+```shell
+pyinstaller RainClassroomAssistant.spec
+```
