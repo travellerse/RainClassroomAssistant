@@ -1,20 +1,17 @@
 import json
+import os
 import random
 import threading
 import time
 import traceback
+from enum import Enum
 
 import requests
 import websocket
+from litellm import completion
 
 from Scripts.PPTManager import PPTManager
-from Scripts.Utils import (
-    calculate_waittime,
-    dict_result,
-    get_user_info,
-    is_debug,
-    get_host,
-)
+from Scripts.Utils import calculate_waittime, dict_result, get_host, get_user_info, is_debug
 
 
 class Lesson:
@@ -53,9 +50,7 @@ class Lesson:
             pdfname, usetime = PPTManager(data, self.lessonname).start()
             if pdfname is None or usetime is None:
                 if is_debug():
-                    self.add_message(
-                        "重复下载ppt取消 : " + pdfname + f"，耗时{usetime}秒", 0
-                    )
+                    self.add_message("重复下载ppt取消 : " + pdfname + f"，耗时{usetime}秒", 0)
                 return
             self.add_message("下载ppt成功 : " + pdfname + f"，耗时{usetime}秒", 0)
         except Exception as e:
@@ -63,9 +58,7 @@ class Lesson:
             self.add_message(traceback.format_exc(), 0)
 
     def download_ppt(self, presentationid):
-        threading.Thread(
-            target=self._download, args=(self._get_ppt(presentationid),), daemon=True
-        ).start()
+        threading.Thread(target=self._download, args=(self._get_ppt(presentationid),), daemon=True).start()
 
     def _get_ppt(self, presentationid):
         # 获取课程各页ppt
@@ -76,6 +69,45 @@ class Lesson:
         )
         return dict_result(r.text)["data"]
 
+    class Problem:
+        class ProblemType(Enum):
+            UNKNOWN = 0
+            SINGLE_CHOICE = 1
+            MULTIPLE_CHOICE = 2
+            SHORT_ANSWER = 5
+
+        ProblemTypes = {0: "未知", 1: "单选题", 2: "多选题", 5: "简答题"}
+
+        """{'problemId': '1361180783752465536', 'problemType': 1, 'body': '【思考题1】单个电子(或单个其他粒子)是否具有波动性？', 'score': 400, 'remark': '', 'answers': [], 'sendTime': 0, 'limit': 0, 'options': [{'key': 'A', 'value': '无'}, {'key': 'B', 'value': '有'}], 'submit': {'width': 121.5, 'height': 32.4, 'top': 489.375031, 'left': 486.0}, 'bullets': [{'width': 40.5, 'height': 40.5, 'top': 224.437485, 'label': 'A', 'left': 87.75}, {'width': 40.5, 'height': 40.5, 'top': 291.937469, 'label': 'B', 'left': 87.75}], 'hasRemark': False, 'version': 4, 'result': None, 'index': 5}"""
+
+        def __init__(self, problem):
+            self.problemId = problem.get("problemId", "")
+            self.problemType = problem.get("problemType", 0)
+            self.body = problem.get("body", "")
+            self.score = problem.get("score", 0)
+            self.remark = problem.get("remark", "")
+            self.answers = problem.get("answers", [])
+            self.sendTime = problem.get("sendTime", 0)
+            self.limit = problem.get("limit", 0)
+            self.options = problem.get("options", [])
+            self.submit = problem.get("submit", {})
+            self.bullets = problem.get("bullets", [])
+            # bullets 去除位置大小信息
+            # self.bullets = [{"label": bullet.get("label", "")} for bullet in self.bullets]
+            self.hasRemark = problem.get("hasRemark", False)
+            self.version = problem.get("version", 0)
+            self.result = problem.get("result", None)
+            self.index = problem.get("index", 0)
+
+        def __str__(self):
+            return f"problemId:{self.problemId}, problemType:{self.problemType}, body:{self.body}, score:{self.score}, remark:{self.remark}, answers:{self.answers}, sendTime:{self.sendTime}, limit:{self.limit}, options:{self.options}, submit:{self.submit}, bullets:{self.bullets}, hasRemark:{self.hasRemark}, version:{self.version}, result:{self.result}, index:{self.index}"
+
+        def is_options_valid(self):
+            for option in self.options:
+                if option["value"] == "":
+                    return False
+            return True
+
     def print_problems(self, data):
         answers = {}
         slides = [problem for problem in data["slides"] if "problem" in problem.keys()]
@@ -84,10 +116,41 @@ class Lesson:
         for i in range(len(problems)):
             problems[i]["index"] = index[i]
         for problem in problems:
+            self.get_answers_by_llm(self.Problem(problem))
             answers[problem["index"]] = problem["answers"]
-        self.add_message(
-            f"{self.lessonname}:{data['title']} 的答案为" + str(answers), 0
-        )
+        self.add_message(f"{self.lessonname}:{data['title']} 的答案为" + str(answers), 0)
+
+    def get_answers_by_llm(self, problem, api="ollama"):
+        if not problem.is_options_valid():
+            return
+
+        prompt = "请回答以下问题，如果是选择题，请仅回答选项编号(如 [A] [A,C])，否则请回答具体内容。"
+        problem_text = f"{prompt}\n{self.Problem.ProblemTypes[problem.problemType]}\n{problem.body}\n{problem.options}"
+        print(problem_text)
+
+        if api == "ollama":
+            response = completion(
+                model="ollama/hf.co/mradermacher/DeepScaleR-1.5B-Preview-abliterated-GGUF:Q4_K_M",
+                api_base="http://localhost:13434",
+                stream=True,
+                messages=[{"role": "user", "content": problem_text}],
+                options={"temperature": 0.05},
+            )
+            for chunk in response:
+                print(chunk, end="", flush=True)
+
+        if api == "deepseek":
+            os.environ["DEEPSEEK_API_KEY"] = ""
+            response = completion(
+                model="deepseek/deepseek-chat",
+                stream=True,
+                messages=[{"role": "user", "content": problem_text}],
+                options={"temperature": 0.05},
+            )
+            for chunk in response:
+                print(chunk, end="", flush=True)
+
+        print(end="\n")
 
     def get_problems(self, presentationid):
         # 获取课程ppt中的题目
@@ -151,9 +214,7 @@ class Lesson:
                 return False
         else:
             if limit == -1:
-                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (
-                    self.lessonname
-                )
+                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (self.lessonname)
             else:
                 meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (
                     self.lessonname,
@@ -196,15 +257,7 @@ class Lesson:
             print(op)
             self.add_message(op, 0)
         if op == "hello":
-            presentations = list(
-                set(
-                    [
-                        slide["pres"]
-                        for slide in data["timeline"]
-                        if slide["type"] == "slide"
-                    ]
-                )
-            )
+            presentations = list(set([slide["pres"] for slide in data["timeline"] if slide["type"] == "slide"]))
             print(data)
             current_presentation = data["presentation"]
             if current_presentation not in presentations:
@@ -235,6 +288,10 @@ class Lesson:
             for problem in self.problems_ls:
                 self.problems_dict[problem["index"]] = problem["answers"]
             self.download_ppt(data["presentation"])
+        elif op == "slidenav":
+            if not data["unlockedproblem"] == []:
+                problem = self.Problem(data["unlockedproblem"])
+                threading.Thread(target=self.get_answers_by_llm, args=(self.Problem(promble),)).start()
         elif op == "newdanmu" and self.config["auto_danmu"]:
             current_content = data["danmu"].lower()
             uid = data["userid"]
@@ -272,14 +329,8 @@ class Lesson:
                 if now - i > 60:
                     same_content_ls.remove(i)
             # 如果当前的弹幕没被发过，或者已发送时间超过60秒
-            if (
-                current_content not in self.sent_danmu_dict.keys()
-                or now - self.sent_danmu_dict[current_content] > 60
-            ):
-                if (
-                    len(same_content_ls) + 1
-                    >= self.config["danmu_config"]["danmu_limit"]
-                ):
+            if current_content not in self.sent_danmu_dict.keys() or now - self.sent_danmu_dict[current_content] > 60:
+                if len(same_content_ls) + 1 >= self.config["danmu_config"]["danmu_limit"]:
                     self.send_danmu(current_content)
                     same_content_ls = []
                     self.sent_danmu_dict[current_content] = now
@@ -295,9 +346,7 @@ class Lesson:
         # 此处需要筛选未到期的题目进行回答。
         elif op == "probleminfo":
             if data["limit"] != -1:
-                time_left = int(
-                    data["limit"] - (int(data["now"]) - int(data["dt"])) / 1000
-                )
+                time_left = int(data["limit"] - (int(data["now"]) - int(data["dt"])) / 1000)
             else:
                 time_left = data["limit"]
             # 筛选未到期题目
@@ -305,9 +354,7 @@ class Lesson:
                 if self.config["auto_answer"]:
                     self.start_answer(data["problemid"], time_left)
                 else:
-                    self.add_message(
-                        "%s检测到问题，但未开启自动回答" % self.lessonname, 3
-                    )
+                    self.add_message("%s检测到问题，但未开启自动回答" % self.lessonname, 3)
 
     def start_answer(self, problemid, limit):
         for promble in self.problems_ls:
@@ -323,6 +370,8 @@ class Lesson:
                         answers.append(random.choice(i["answers"]))
                 else:
                     answers = promble.get("answers", [])
+                # if answers == []:
+                #     threading.Thread(target=self.get_answers_by_llm, args=(self.Problem(promble),)).start()
                 threading.Thread(
                     target=self.answer_questions,
                     args=(promble["problemId"], promble["problemType"], answers, limit),
@@ -330,9 +379,7 @@ class Lesson:
                 break
         else:
             if limit == -1:
-                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (
-                    self.lessonname
-                )
+                meg = "%s的问题没有找到答案，该题不限时，请尽快前往雨课堂回答" % (self.lessonname)
             else:
                 meg = "%s的问题没有找到答案，请在%s秒内前往雨课堂回答" % (
                     self.lessonname,
@@ -364,11 +411,7 @@ class Lesson:
             meg = "%s测试课程，不进行监听" % self.lessonname
             self.add_message(meg, 7)
             return callback(self)
-        if (
-            int(time.time()) - timestamp
-            <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"]
-            and delay > 0
-        ):
+        if int(time.time()) - timestamp <= self.config["sign_config"]["delay_time"]["custom"]["cutoff"] and delay > 0:
             meg = f"检测到课程{self.lessonname}正在上课，将于{delay}秒后加入监听列表"
             self.add_message(meg, 7)
             time.sleep(delay)
@@ -415,9 +458,7 @@ class Lesson:
 
     def get_lesson_info(self):
         url = f"https://{get_host(self.config['region'])}/api/v3/lesson/basic-info"
-        r = requests.get(
-            url=url, headers=self.headers, proxies={"http": None, "https": None}
-        )
+        r = requests.get(url=url, headers=self.headers, proxies={"http": None, "https": None})
         return dict_result(r.text)["data"]
 
     def __eq__(self, other):
