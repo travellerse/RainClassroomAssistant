@@ -38,7 +38,7 @@ class Lesson:
         self.add_course = main_ui.add_course_signal.emit
         self.del_course = main_ui.del_course_signal.emit
         self.config = main_ui.config
-        self.region = self.config["region"]
+        self.region = int(self.config["region"])
         code, rtn = get_user_info(self.sessionid, self.config["region"])
         self.user_uid = rtn["id"]
         self.user_uname = rtn["name"]
