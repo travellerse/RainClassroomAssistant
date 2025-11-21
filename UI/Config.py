@@ -236,6 +236,10 @@ class Config_Ui(object):
         self.apprise_desc.setWordWrap(True)
         self.apprise_desc.setObjectName("apprise_desc")
         self.vertical_layout_apprise_settings.addWidget(self.apprise_desc)
+        self.apprise_link = QtWidgets.QLabel(self.when_apprise_on)
+        self.apprise_link.setOpenExternalLinks(True)
+        self.apprise_link.setObjectName("apprise_link")
+        self.vertical_layout_apprise_settings.addWidget(self.apprise_link)
         self.apprise_urls = QtWidgets.QPlainTextEdit(self.when_apprise_on)
         self.apprise_urls.setObjectName("apprise_urls")
         self.apprise_urls.setMaximumBlockCount(50)
@@ -508,6 +512,12 @@ class Config_Ui(object):
             _translate(
                 "Dialog",
                 "通知地址（可填写多个，每行一个，支持 apprise://、mailto:// 等格式）",
+            )
+        )
+        self.apprise_link.setText(
+            _translate(
+                "Dialog",
+                "了解更多:<a href=\"https://github.com/caronc/apprise/wiki\">Apprise Wiki</a>",
             )
         )
         self.apprise_event_lesson_start.setText(
