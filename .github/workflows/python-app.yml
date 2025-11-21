@@ -7,10 +7,10 @@ on:
   push:
     branches:
       - master
-    paths: 
-      - 'file_version_info.txt'
-      - 'RainClassroomAssistant.spec'
-      - 'python-app.yml'
+    paths:
+      - "file_version_info.txt"
+      - "RainClassroomAssistant.spec"
+      - "python-app.yml"
   workflow_dispatch:
 
 permissions:
@@ -22,33 +22,33 @@ jobs:
     outputs:
       executable_path: ./dist/RainClassroomAssistant.exe
     steps:
-    - name: PyInstaller Action
-      uses: sayyid5416/pyinstaller@v1.6.1
-      with:
-        python_ver: '3.10'
-        spec: 'RainClassroomAssistant.spec'
-        requirements: 'requirements.txt'
-    - name: Upload Executable
-      uses: actions/upload-artifact@v4.4.0
-      with:
-        name: RainClassroomAssistant
-        path: ./dist/RainClassroomAssistant.exe
+      - name: PyInstaller Action
+        uses: sayyid5416/pyinstaller@v1.6.1
+        with:
+          python_ver: "3.12"
+          spec: "RainClassroomAssistant.spec"
+          requirements: "requirements.txt"
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: RainClassroomAssistant
+          path: ./dist/RainClassroomAssistant.exe
 
   pyinstaller-build-ios:
     runs-on: macos-latest
     if: false
     steps:
-    - name: PyInstaller Action
-      uses: sayyid5416/pyinstaller@v1.6.1
-      with:
-        python_ver: '3.10'
-        spec: 'RainClassroomAssistant.spec'
-        requirements: 'requirements.txt'
-    - name: Upload Executable
-      uses: actions/upload-artifact@v4.4.0
-      with:
-        name: RainClassroomAssistant
-        path: ./dist/RainClassroomAssistant
+      - name: PyInstaller Action
+        uses: sayyid5416/pyinstaller@v1.6.1
+        with:
+          python_ver: "3.12"
+          spec: "RainClassroomAssistant.spec"
+          requirements: "requirements.txt"
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: RainClassroomAssistant
+          path: ./dist/RainClassroomAssistant
 
   release:
     runs-on: ubuntu-latest
