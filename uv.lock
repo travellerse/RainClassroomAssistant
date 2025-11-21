@@ -3464,7 +3464,7 @@ wheels = [
 
 [[package]]
 name = "rainclassroomassistant"
-version = "0.5.2"
+version = "0.5.3"
 source = { virtual = "." }
 dependencies = [
     { name = "apprise" },
