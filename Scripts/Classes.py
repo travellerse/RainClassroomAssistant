@@ -220,6 +220,23 @@ class Lesson:
                 self._current_problem(wsapp, problemid)
         elif op == "unlockproblem":
             self.start_answer(data["problem"]["sid"], data["problem"]["limit"])
+            problem = data.get("problem", {})
+            if problem:
+                limit = problem.get("limit")
+                suffix = ""
+                if limit == -1:
+                    suffix = "（不限时）"
+                elif limit is not None:
+                    suffix = f"（限时{limit}秒）"
+                index = problem.get("index") or problem.get("sid")
+                body = f"{self.lessonname} 收到新题{suffix}"
+                if index:
+                    body = f"{self.lessonname} 收到新题 #{index}{suffix}"
+                self.main_ui.notify_apprise(
+                    "new_problem",
+                    body,
+                    f"{self.lessonname} 新题提醒",
+                )
         elif op == "lessonfinished":
             meg = "%s下课了" % self.lessonname
             # threading.Thread(target=say_something,args=(meg,)).start()
@@ -375,6 +392,11 @@ class Lesson:
         else:
             meg = f"检测到课程{self.lessonname}正在上课，已加入监听列表"
             self.add_message(meg, 7)
+        self.main_ui.notify_apprise(
+            "lesson_start",
+            meg,
+            f"{self.lessonname} 上课通知",
+        )
         self.wsapp = websocket.WebSocketApp(
             url=f"wss://{get_host(self.config['region'])}/wsapp/",
             header=self.headers,

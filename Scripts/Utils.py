@@ -133,6 +133,11 @@ def get_initial_data(old_config=None):
         "sign_config": {
             "delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}
         },
+        "apprise": {
+            "enabled": False,
+            "urls": [],
+            "events": {"lesson_start": True, "new_problem": True},
+        },
     }
 
     if old_config:

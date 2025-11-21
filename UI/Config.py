@@ -220,6 +220,39 @@ class Config_Ui(object):
         self.verticalLayout_8.addWidget(self.label_2)
         self.verticalLayout_5.addWidget(self.when_answer_on)
         self.verticalLayout_12.addWidget(self.answer_config)
+        self.apprise_config = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.apprise_config.setObjectName("apprise_config")
+        self.vertical_layout_apprise = QtWidgets.QVBoxLayout(self.apprise_config)
+        self.vertical_layout_apprise.setObjectName("vertical_layout_apprise")
+        self.apprise_on = QtWidgets.QCheckBox(self.apprise_config)
+        self.apprise_on.setObjectName("apprise_on")
+        self.vertical_layout_apprise.addWidget(self.apprise_on)
+        self.when_apprise_on = QtWidgets.QWidget(self.apprise_config)
+        self.when_apprise_on.setEnabled(False)
+        self.when_apprise_on.setObjectName("when_apprise_on")
+        self.vertical_layout_apprise_settings = QtWidgets.QVBoxLayout(self.when_apprise_on)
+        self.vertical_layout_apprise_settings.setObjectName("vertical_layout_apprise_settings")
+        self.apprise_desc = QtWidgets.QLabel(self.when_apprise_on)
+        self.apprise_desc.setWordWrap(True)
+        self.apprise_desc.setObjectName("apprise_desc")
+        self.vertical_layout_apprise_settings.addWidget(self.apprise_desc)
+        self.apprise_urls = QtWidgets.QPlainTextEdit(self.when_apprise_on)
+        self.apprise_urls.setObjectName("apprise_urls")
+        self.apprise_urls.setMaximumBlockCount(50)
+        self.vertical_layout_apprise_settings.addWidget(self.apprise_urls)
+        self.apprise_events = QtWidgets.QWidget(self.when_apprise_on)
+        self.apprise_events.setObjectName("apprise_events")
+        self.vertical_layout_apprise_events = QtWidgets.QVBoxLayout(self.apprise_events)
+        self.vertical_layout_apprise_events.setObjectName("vertical_layout_apprise_events")
+        self.apprise_event_lesson_start = QtWidgets.QCheckBox(self.apprise_events)
+        self.apprise_event_lesson_start.setObjectName("apprise_event_lesson_start")
+        self.vertical_layout_apprise_events.addWidget(self.apprise_event_lesson_start)
+        self.apprise_event_new_problem = QtWidgets.QCheckBox(self.apprise_events)
+        self.apprise_event_new_problem.setObjectName("apprise_event_new_problem")
+        self.vertical_layout_apprise_events.addWidget(self.apprise_event_new_problem)
+        self.vertical_layout_apprise_settings.addWidget(self.apprise_events)
+        self.vertical_layout_apprise.addWidget(self.when_apprise_on)
+        self.verticalLayout_12.addWidget(self.apprise_config)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout.addWidget(self.scrollArea)
         self.btn_wid = QtWidgets.QWidget(Dialog)
@@ -247,6 +280,7 @@ class Config_Ui(object):
         self.delay_time_radio_2.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_3.clicked.connect(self.enable_delay_custom)
         self.delay_time_radio_4.clicked.connect(self.enable_delay_custom)
+        self.apprise_on.stateChanged.connect(self.enable_apprise_config)
         self.save.clicked.connect(functools.partial(self.save_config, dialog=Dialog))
 
         self.retranslateUi(Dialog)
@@ -286,6 +320,10 @@ class Config_Ui(object):
             self.when_delay_time_4.setEnabled(False)
         else:
             self.when_delay_time_4.setEnabled(True)
+
+    def enable_apprise_config(self):
+        # 启用Apprise相关配置
+        self.when_apprise_on.setEnabled(self.apprise_on.isChecked())
 
     def load_config(self, config):
         # 签到配置
@@ -336,6 +374,15 @@ class Config_Ui(object):
         self.delay_time_4_input.setValue(
             config["answer_config"]["answer_delay"]["custom"]["percent"]
         )
+        self.apprise_on.setChecked(config["apprise"]["enabled"])
+        self.enable_apprise_config()
+        self.apprise_urls.setPlainText("\n".join(config["apprise"]["urls"]))
+        self.apprise_event_lesson_start.setChecked(
+            config["apprise"]["events"]["lesson_start"]
+        )
+        self.apprise_event_new_problem.setChecked(
+            config["apprise"]["events"]["new_problem"]
+        )
         self.dialog_config = config
 
     def save_config(self, dialog):
@@ -385,6 +432,15 @@ class Config_Ui(object):
         config["answer_config"]["answer_delay"]["custom"][
             "percent"
         ] = self.delay_time_4_input.value()
+        urls = [
+            line.strip()
+            for line in self.apprise_urls.toPlainText().splitlines()
+            if line.strip()
+        ]
+        config["apprise"]["enabled"] = self.apprise_on.isChecked()
+        config["apprise"]["urls"] = urls
+        config["apprise"]["events"]["lesson_start"] = self.apprise_event_lesson_start.isChecked()
+        config["apprise"]["events"]["new_problem"] = self.apprise_event_new_problem.isChecked()
         # 保存
         config_path = get_config_path()
         with open(config_path, "w+") as f:
@@ -446,3 +502,17 @@ class Config_Ui(object):
         )
         self.save.setText(_translate("Dialog", "保存"))
         self.cancel.setText(_translate("Dialog", "取消"))
+        self.apprise_config.setTitle(_translate("Dialog", "Apprise 推送"))
+        self.apprise_on.setText(_translate("Dialog", "启用 Apprise 通知"))
+        self.apprise_desc.setText(
+            _translate(
+                "Dialog",
+                "通知地址（可填写多个，每行一个，支持 apprise://、mailto:// 等格式）",
+            )
+        )
+        self.apprise_event_lesson_start.setText(
+            _translate("Dialog", "课程开始")
+        )
+        self.apprise_event_new_problem.setText(
+            _translate("Dialog", "收到新题目")
+        )

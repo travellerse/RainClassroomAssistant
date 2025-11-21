@@ -20,6 +20,7 @@ from deepdiff import DeepDiff
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Scripts.Monitor import monitor
+from Scripts.Notifier import AppriseNotifier
 from Scripts.Update import Update, get_version
 from Scripts.Utils import *
 from UI.Config import Config_Ui
@@ -185,6 +186,7 @@ class MainWindow_Ui(QtCore.QObject):
         dir_route = get_config_dir()
         config_route = get_config_path()
         self.config = self.check_config(dir_route, config_route)
+        self.refresh_apprise_notifier()
 
         if is_debug():
             self.add_message_signal.emit("当前为Debug模式", 0)
@@ -309,6 +311,7 @@ class MainWindow_Ui(QtCore.QObject):
             config_route = get_config_path()
             with open(config_route, "r") as f:
                 self.config = json.load(f)
+            self.refresh_apprise_notifier()
 
     def show_login(self, _bool=False, rtn_message=""):
         # 展示登录对话框
@@ -329,6 +332,7 @@ class MainWindow_Ui(QtCore.QObject):
             config_route = get_config_path()
             with open(config_route, "r") as f:
                 self.config = json.load(f)
+            self.refresh_apprise_notifier()
         # 删除涉及登录的线程
         login_ui.close_all()
         # 再次检测登录状态
@@ -391,6 +395,7 @@ class MainWindow_Ui(QtCore.QObject):
             return False, user_info
         elif code == 0:
             return True, user_info
+        return False, user_info
 
     def add_message(self, message, type=0):
         # 新增输出信息，并尝试语音播报
@@ -399,6 +404,17 @@ class MainWindow_Ui(QtCore.QObject):
         logging.info(message)
         if not type == 0:
             self.audio(message, type)
+
+    def notify_apprise(self, event, message, title="摸鱼课堂通知"):
+        notifier = getattr(self, "apprise_notifier", None)
+        if notifier:
+            notifier.notify(event, title, message)
+
+    def refresh_apprise_notifier(self):
+        if getattr(self, "apprise_notifier", None):
+            self.apprise_notifier.update_config(self.config)
+        else:
+            self.apprise_notifier = AppriseNotifier(self.config)
 
     def active_clicked(self):
         # 启动按钮被点击

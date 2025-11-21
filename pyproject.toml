@@ -1,9 +1,9 @@
 [project]
 name = "rainclassroomassistant"
-version = "0.4.3"
+version = "0.5.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "deepdiff>=8.6.1",
     "fpdf>=1.7.2",
