@@ -9,18 +9,17 @@ import requests
 import urllib3
 from numpy import random
 
-if sys.platform.startswith("win"):
-    import win32api
-    import win32con
-    from win10toast import ToastNotifier
+# if sys.platform.startswith("win"):
+#     import win32api
+#     import win32con
+#     from win11toast import toast
 
 lock = threading.Lock()
-toaster = ToastNotifier()
 
 
 def is_debug():
     # 判断是否为debug模式
-    return True if sys.gettrace() else False
+    return bool(sys.gettrace()) or os.environ.get("RAIN_DEBUG", "").lower() in ("1", "true")
 
 
 def say_something(text):
@@ -31,11 +30,9 @@ def say_something(text):
 
 
 def show_info(text, title):
-    toaster.show_toast(
-        title, text, icon_path=r"UI\Image\favicon.ico", duration=15, threaded=True
-    )
-    if sys.platform.startswith("win"):
-        win32api.MessageBox(0, text, title, win32con.MB_OK)
+    # if sys.platform.startswith("win"):
+    #     toast(title, text, icon=r"UI\Image\favicon.ico")
+    pass
 
 
 def dict_result(text):
@@ -108,6 +105,14 @@ def calculate_waittime(limit, type, custom_percent=50):
     return int(wait_time)
 
 
+def merge_dicts(base, update):
+    for key, value in update.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            merge_dicts(base[key], value)
+        else:
+            base[key] = value
+
+
 def get_initial_data(old_config=None):
     # 默认配置信息
     initial_data = {
@@ -130,20 +135,16 @@ def get_initial_data(old_config=None):
         },
         "auto_answer": True,
         "answer_config": {"answer_delay": {"type": 1, "custom": {"percent": 50}}},
-        "sign_config": {
-            "delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}
-        },
+        "sign_config": {"delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}},
         "apprise": {
             "enabled": False,
             "urls": [],
-            "events": {"lesson_start": True, "new_problem": True},
+            "events": {"startup": True, "lesson_start": True, "new_problem": True},
         },
     }
 
     if old_config:
-        for key in old_config:
-            if key in initial_data:
-                initial_data[key] = old_config[key]
+        merge_dicts(initial_data, old_config)
 
     return initial_data
 

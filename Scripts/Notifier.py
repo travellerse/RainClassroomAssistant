@@ -1,5 +1,3 @@
-import logging
-
 try:
     import apprise
 except ImportError:  # pragma: no cover
@@ -7,11 +5,12 @@ except ImportError:  # pragma: no cover
 
 
 class AppriseNotifier:
-    def __init__(self, config):
+    def __init__(self, config, main_ui):
         self.config = config or {}
         self.apprise = None
         self.events = {}
         self.enabled = False
+        self.main_ui = main_ui
         self._build()
 
     def update_config(self, config):
@@ -24,7 +23,7 @@ class AppriseNotifier:
         self.events = apprise_config.get("events", {})
         if not apprise or not apprise_config.get("enabled") or not urls:
             if apprise_config.get("enabled") and not apprise:
-                logging.warning("Apprise 模块不可用，无法发送通知")
+                self.main_ui.add_message_signal.emit("Apprise 模块不可用，无法发送通知", 2)
             self.apprise = None
             self.enabled = False
             return
@@ -34,8 +33,8 @@ class AppriseNotifier:
             try:
                 if self.apprise.add(url):
                     added += 1
-            except Exception:  # pragma: no cover
-                logging.exception("Apprise 添加通知地址失败：%s", url)
+            except Exception as e:
+                self.main_ui.add_message_signal.emit(f"Apprise 添加通知地址失败：{e}", 2)
         self.enabled = added > 0
         if not self.enabled:
             self.apprise = None
@@ -50,6 +49,6 @@ class AppriseNotifier:
         try:
             self.apprise.notify(title=str(title), body=str(body))
             return True
-        except Exception:  # pragma: no cover
-            logging.exception("Apprise 通知发送失败")
+        except Exception as e:  # pragma: no cover
+            self.main_ui.add_message_signal.emit(str(e), 2)
             return False

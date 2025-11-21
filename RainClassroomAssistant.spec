@@ -1,17 +1,23 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+import apprise
+
+apprise_path = os.path.dirname(apprise.__file__)
+
 
 a = Analysis(
     ['RainClassroomAssistant.py'],
     pathex=[],
     binaries=[],
-    datas=[('UI/Image/favicon.ico','UI/Image'),('UI/Image/NoRainClassroom.jpg','UI/Image')],
+    datas=[('UI/Image/favicon.ico','UI/Image'),('UI/Image/NoRainClassroom.jpg','UI/Image'), (apprise_path, 'apprise')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
+    collect_all=['apprise'],
 )
 pyz = PYZ(a.pure)
 
