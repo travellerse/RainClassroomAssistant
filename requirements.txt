@@ -8,6 +8,7 @@ numpy
 deepdiff
 Pillow
 PyPDF2
+apprise
 win10toast; platform_system=='Windows'
 pyinstaller
 pre-commit
