@@ -23,7 +23,9 @@ class AppriseNotifier:
         self.events = apprise_config.get("events", {})
         if not apprise or not apprise_config.get("enabled") or not urls:
             if apprise_config.get("enabled") and not apprise:
-                self.main_ui.add_message_signal.emit("Apprise 模块不可用，无法发送通知", 2)
+                self.main_ui.add_message_signal.emit(
+                    "Apprise 模块不可用，无法发送通知", 2
+                )
             self.apprise = None
             self.enabled = False
             return
@@ -34,7 +36,9 @@ class AppriseNotifier:
                 if self.apprise.add(url):
                     added += 1
             except Exception as e:
-                self.main_ui.add_message_signal.emit(f"Apprise 添加通知地址失败：{e}", 2)
+                self.main_ui.add_message_signal.emit(
+                    f"Apprise 添加通知地址失败：{e}", 2
+                )
         self.enabled = added > 0
         if not self.enabled:
             self.apprise = None

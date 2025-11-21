@@ -11,9 +11,9 @@ from Scripts.PPTManager import PPTManager
 from Scripts.Utils import (
     calculate_waittime,
     dict_result,
+    get_host,
     get_user_info,
     is_debug,
-    get_host,
 )
 
 

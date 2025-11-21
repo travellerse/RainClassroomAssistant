@@ -57,7 +57,9 @@ class MainWindow_Ui(QtCore.QObject):
         self.horizontalLayout_3.setSpacing(6)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label = QtWidgets.QLabel(self.Menu)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -65,7 +67,9 @@ class MainWindow_Ui(QtCore.QObject):
         self.label.setMaximumSize(QtCore.QSize(32, 32))
         self.label.setStyleSheet("border-radius:10px;\n" "")
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(resource_path("UI\\Image\\NoRainClassroom.jpg")))
+        self.label.setPixmap(
+            QtGui.QPixmap(resource_path("UI\\Image\\NoRainClassroom.jpg"))
+        )
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.horizontalLayout_3.addWidget(self.label)
@@ -73,7 +77,9 @@ class MainWindow_Ui(QtCore.QObject):
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n" 'font: 16pt "黑体";')
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_3.addWidget(self.label_2)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem)
         self.active_btn = QtWidgets.QPushButton(self.Menu)
         self.active_btn.setMaximumSize(QtCore.QSize(100, 400))
@@ -102,12 +108,18 @@ class MainWindow_Ui(QtCore.QObject):
         self.horizontalLayout_3.setStretch(5, 1)
         self.verticalLayout.addWidget(self.Menu)
         self.Table = QtWidgets.QGroupBox(self.Window)
-        self.Table.setStyleSheet("color: rgb(209, 209, 209);\n" 'font: 10pt "微软雅黑";\n' "color: rgb(0, 0, 0);")
+        self.Table.setStyleSheet(
+            "color: rgb(209, 209, 209);\n"
+            'font: 10pt "微软雅黑";\n'
+            "color: rgb(0, 0, 0);"
+        )
         self.Table.setObjectName("Table")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.Table)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.tableWidget = QtWidgets.QTableWidget(self.Table)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
@@ -127,19 +139,27 @@ class MainWindow_Ui(QtCore.QObject):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(3, item)
         self.tableWidget.horizontalHeader().setHighlightSections(False)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.Stretch
+        )
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.verticalHeader().setHighlightSections(False)
         self.verticalLayout_3.addWidget(self.tableWidget)
         self.verticalLayout.addWidget(self.Table)
         self.Output = QtWidgets.QGroupBox(self.Window)
-        self.Output.setStyleSheet("color: rgb(209, 209, 209);\n" 'font: 10pt "微软雅黑";\n' "color: rgb(0, 0, 0);")
+        self.Output.setStyleSheet(
+            "color: rgb(209, 209, 209);\n"
+            'font: 10pt "微软雅黑";\n'
+            "color: rgb(0, 0, 0);"
+        )
         self.Output.setObjectName("Output")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.Output)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.output_textarea = QtWidgets.QTextBrowser(self.Output)
         self.output_textarea.setStyleSheet(
-            "background-color: rgb(100, 100, 100);\n" "color: rgb(255, 255, 255);\n" 'font: 9pt "微软雅黑";'
+            "background-color: rgb(100, 100, 100);\n"
+            "color: rgb(255, 255, 255);\n"
+            'font: 9pt "微软雅黑";'
         )
         self.output_textarea.setObjectName("output_textarea")
         self.verticalLayout_2.addWidget(self.output_textarea)
@@ -180,7 +200,9 @@ class MainWindow_Ui(QtCore.QObject):
             "0.5.0版本新增Apprise通知功能，有需要的可以前往配置界面配置",
             0,
         )
-        self.notify_apprise("startup", "摸鱼课堂启动", "摸鱼课堂助手 " + get_version().__str__())
+        self.notify_apprise(
+            "startup", "摸鱼课堂启动", "摸鱼课堂助手 " + get_version().__str__()
+        )
         if is_debug():
             self.notify_apprise(
                 "lesson_start",
@@ -197,8 +219,12 @@ class MainWindow_Ui(QtCore.QObject):
         status, user_info = self.check_login()
         if status:
             self.login_btn.setText("重新登录")
-            self.add_message_signal.emit("登录成功，当前登录用户：" + user_info["name"], 0)
-            self.add_message_signal.emit("当前登录：" + get_name(self.config["region"]), 0)
+            self.add_message_signal.emit(
+                "登录成功，当前登录用户：" + user_info["name"], 0
+            )
+            self.add_message_signal.emit(
+                "当前登录：" + get_name(self.config["region"]), 0
+            )
         else:
             self.show_login()
 
@@ -254,7 +280,10 @@ class MainWindow_Ui(QtCore.QObject):
 
         # 检查是否已经存在相同的课程
         for i in range(self.tableWidget.rowCount()):
-            existing_row = [self.tableWidget.item(i, j).text() for j in range(self.tableWidget.columnCount())]
+            existing_row = [
+                self.tableWidget.item(i, j).text()
+                for j in range(self.tableWidget.columnCount())
+            ]
             if existing_row == row:
                 self.add_message_signal.emit("课程已存在，未添加重复课程", 0)
                 return
@@ -327,8 +356,12 @@ class MainWindow_Ui(QtCore.QObject):
         # 再次检测登录状态
         status, user_info = self.check_login()
         if status and success:
-            self.add_message_signal.emit("登录成功，当前登录用户：" + user_info["name"], 0)
-            self.add_message_signal.emit("当前登录：" + get_name(self.config["region"]), 0)
+            self.add_message_signal.emit(
+                "登录成功，当前登录用户：" + user_info["name"], 0
+            )
+            self.add_message_signal.emit(
+                "当前登录：" + get_name(self.config["region"]), 0
+            )
             self.login_btn.setText("重新登录")
         if not status and not _bool:
             self.show_login(_bool=True, rtn_message="登录失败，请重新登录")
@@ -352,7 +385,10 @@ class MainWindow_Ui(QtCore.QObject):
                     data = json.load(f)
                     info = DeepDiff(get_initial_data(), data)
                     for key in info:
-                        if key == "dictionary_item_added" or key == "dictionary_item_removed":
+                        if (
+                            key == "dictionary_item_added"
+                            or key == "dictionary_item_removed"
+                        ):
                             self.add_message_signal.emit(info, 0)
                             raise Exception
                     self.add_message_signal.emit("配置文件已读取", 0)
@@ -455,7 +491,9 @@ class MainWindow_Ui(QtCore.QObject):
                 or (type == 7 and audio_type["course_info"])
                 or (type == 8 and audio_type["network_info"])
             ):
-                threading.Thread(target=say_something, args=(message,), daemon=True).start()
+                threading.Thread(
+                    target=say_something, args=(message,), daemon=True
+                ).start()
                 if type == 3:
                     threading.Thread(
                         target=show_info,

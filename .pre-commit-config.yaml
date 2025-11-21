@@ -1,12 +1,50 @@
+exclude: "^docs/|/migrations/|devcontainer.json"
+default_stages: [pre-commit]
+minimum_pre_commit_version: "3.2.0"
+
+default_language_version:
+  python: python3.12
+
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
--   repo: https://github.com/psf/black
-    rev: 24.10.0
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: detect-private-key
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.11.0
     hooks:
-    -   id: black
+      - id: black
+        files: \.py$
+
+  # isort for import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        name: Isort (Python)
+        args: ["--profile", "black", "--filter-files"]
+
+  - repo: https://github.com/shssoichiro/oxipng
+    rev: v9.1.5
+    hooks:
+      - id: oxipng
+        name: Image Compression
+        args: ["-q", "-o", "2", "-s", "--ng"]
+
+# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
+default_install_hook_types: [pre-commit, prepare-commit-msg]
+ci:
+  autofix_commit_msg: "chore: Auto fix by pre-commit hooks [skip changelog]"
+  autofix_prs: true
+  autoupdate_commit_msg: "chore: Auto update by pre-commit hooks [skip changelog]"

@@ -19,7 +19,10 @@ lock = threading.Lock()
 
 def is_debug():
     # 判断是否为debug模式
-    return bool(sys.gettrace()) or os.environ.get("RAIN_DEBUG", "").lower() in ("1", "true")
+    return bool(sys.gettrace()) or os.environ.get("RAIN_DEBUG", "").lower() in (
+        "1",
+        "true",
+    )
 
 
 def say_something(text):
@@ -135,7 +138,9 @@ def get_initial_data(old_config=None):
         },
         "auto_answer": True,
         "answer_config": {"answer_delay": {"type": 1, "custom": {"percent": 50}}},
-        "sign_config": {"delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}},
+        "sign_config": {
+            "delay_time": {"type": 1, "custom": {"time": 120, "cutoff": 120}}
+        },
         "apprise": {
             "enabled": False,
             "urls": [],

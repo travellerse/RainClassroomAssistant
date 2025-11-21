@@ -12,9 +12,9 @@ jobs:
       - name: close-issues
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'close-issues'
+          actions: "close-issues"
           token: ${{ secrets.GITHUB_TOKEN }}
-          labels: 'need more info'
+          labels: "need more info"
           inactive-day: 15
           body: |
             由于该 issue 被标记为需要更多信息，却 15 天未收到回应。现关闭 issue，若有任何问题，可评论回复。
@@ -29,15 +29,15 @@ jobs:
         if: github.event.issue.state == 'open' && github.actor == github.event.issue.user.login
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'remove-labels'
+          actions: "remove-labels"
           issue-number: ${{ github.event.issue.number }}
-          labels: 'inactive'
+          labels: "inactive"
   check-inactive:
     runs-on: ubuntu-latest
     steps:
       - name: check-inactive
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'check-inactive'
+          actions: "check-inactive"
           token: ${{ secrets.GITHUB_TOKEN }}
           inactive-day: 30
