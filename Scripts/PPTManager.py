@@ -155,7 +155,7 @@ class PPTManager:
         pdfname = self.generate_ppt()
         self.delete_cache()
         usetime = round(time.time() - float(self.timestamp), 4)
-        del self.title_dict[self.title]
+        self.title_dict.pop(self.title, None)
         return pdfname, usetime
 
     def __eq__(self, __value: object) -> bool:
