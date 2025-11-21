@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Release
 
 on:
   push:
@@ -56,6 +56,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          args: --latest --strip header
+        env:
+          OUTPUT: CHANGELOG.md
+      - name: Read changelog
+        id: changelog
+        run: |
+          changelog=$(cat CHANGELOG.md)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$changelog" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - name: get version
         id: get_version
         run: |
@@ -87,6 +102,8 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.version }}
           name: ${{ steps.get_version.outputs.version }}
           body: |
+            ${{ steps.changelog.outputs.changelog }}
+
             ## hash256
             - RainClassroomAssistant.exe: ${{ steps.hash_windows.outputs.hash_windows }}
           draft: false
