@@ -196,6 +196,10 @@ class MainWindow_Ui(QtCore.QObject):
             "注意：本软件不会被用于计算雨课堂在线时长，仅提供一个登陆记录，需要自行打开雨课堂",
             0,
         )
+        self.add_message_signal.emit(
+            "0.5.0版本新增Apprise通知功能，有需要的可以前往配置界面配置",
+            0,
+        )
 
         # 登录状态检查
         status, user_info = self.check_login()
