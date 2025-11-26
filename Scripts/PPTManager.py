@@ -38,8 +38,19 @@ class PPTManager:
         self.check_dir()
 
     def validateTitle(self, title):
+        # 首先移除所有不可打印字符（除了常见的空格、换行等）
+        title = "".join(
+            char for char in title if char.isprintable() or char in ["\t", "\n", "\r"]
+        )
+
+        # 替换Windows不允许的文件名字符
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
+
+        # 移除多余的空格和下划线
+        new_title = re.sub(r"[_\s]+", "_", new_title)  # 多个空格或下划线替换为一个
+        new_title = new_title.strip("_")  # 移除开头和结尾的下划线
+
         return new_title
 
     def check_dir(self):

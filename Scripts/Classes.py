@@ -193,8 +193,8 @@ class Lesson:
         data = dict_result(message)
         op = data["op"]
         if is_debug():
-            print(op)
-            self.add_message(op, 0)
+            print(data)
+            self.add_message(str(data), 0)
         if op == "hello":
             presentations = list(
                 set(
@@ -205,7 +205,6 @@ class Lesson:
                     ]
                 )
             )
-            print(data)
             current_presentation = data["presentation"]
             if current_presentation not in presentations:
                 presentations.append(current_presentation)
