@@ -2,6 +2,7 @@
 
 import os
 import apprise
+import version
 
 apprise_path = os.path.dirname(apprise.__file__)
 
@@ -48,5 +49,5 @@ app = BUNDLE(exe,
     name='RainClassroomAssistant.app',
     icon=None,
     bundle_identifier=None,
-    version='0.5.3',
+    version=version.__version__,
 )

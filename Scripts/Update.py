@@ -11,26 +11,33 @@ from Scripts.Utils import is_debug
 
 
 def get_version():
-    version = ""
-    if is_debug():
-        with open("file_version_info.txt", "r") as f:
-            version_info = f.read()
-        version = re.search("u'FileVersion', u'.*'", version_info).group().split("'")[3]
-    else:
-        if sys.platform.startswith("win"):
-            info = win32api.GetFileVersionInfo(
-                win32api.GetModuleFileName(win32api.GetModuleHandle(None)), "\\"
-            )  # 获取文件版本信息
-            ms = info["FileVersionMS"]
-            ls = info["FileVersionLS"]
-            version = "%d.%d.%d" % (
-                win32api.HIWORD(ms),
-                win32api.LOWORD(ms),
-                win32api.HIWORD(ls),
+    try:
+        import version
+
+        return Version(version.__version__)
+    except ImportError:
+        # Fallback
+        if is_debug():
+            with open("file_version_info.txt", "r") as f:
+                version_info = f.read()
+            version = (
+                re.search("u'FileVersion', u'.*'", version_info).group().split("'")[3]
             )
-        elif sys.platform == "darwin":
-            version = "0.3.5"
-    return Version(version)  # 获取文件版本号
+        else:
+            if sys.platform.startswith("win"):
+                info = win32api.GetFileVersionInfo(
+                    win32api.GetModuleFileName(win32api.GetModuleHandle(None)), "\\"
+                )  # 获取文件版本信息
+                ms = info["FileVersionMS"]
+                ls = info["FileVersionLS"]
+                version = "%d.%d.%d" % (
+                    win32api.HIWORD(ms),
+                    win32api.LOWORD(ms),
+                    win32api.HIWORD(ls),
+                )
+            elif sys.platform == "darwin":
+                version = "0.3.5"
+        return Version(version)  # 获取文件版本号
 
 
 class Update:
