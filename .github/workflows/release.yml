@@ -29,6 +29,9 @@ jobs:
   prepare-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
+    outputs:
+      version: ${{ steps.set_job_outputs.outputs.version }}
+      sha: ${{ steps.set_job_outputs.outputs.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,6 +64,11 @@ jobs:
         run: |
           git push origin HEAD
           git push origin --tags
+      - name: Set job outputs
+        id: set_job_outputs
+        run: |
+          echo "version=v${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
   pyinstaller-build:
     runs-on: windows-latest
@@ -137,22 +145,47 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [pyinstaller-build]
+    needs: [pyinstaller-build, prepare-release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ needs.prepare-release.outputs.version }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Generate changelog
+      - name: Generate changelog (with skip args)
+        if: ${{ steps.find_skip_commits.outputs.skip_args != '' }}
+        uses: orhun/git-cliff-action@v4
+        with:
+          args: --latest --strip header ${{ steps.find_skip_commits.outputs.skip_args }}
+        env:
+          OUTPUT: CHANGELOG.md
+      - name: Generate changelog (no skip args)
+        if: ${{ steps.find_skip_commits.outputs.skip_args == '' }}
         uses: orhun/git-cliff-action@v4
         with:
           args: --latest --strip header
         env:
           OUTPUT: CHANGELOG.md
+      - name: Find commits to skip in changelog
+        id: find_skip_commits
+        run: |
+          # Determine previous tag (second most recent by creation date)
+          prev_tag=$(git tag --sort=-creatordate | sed -n '2p' || true)
+          echo "prev_tag=$prev_tag" >> $GITHUB_OUTPUT
+          if [ -z "$prev_tag" ]; then
+            echo "skip_args=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          commits=$(git log "$prev_tag"..HEAD --pretty=format:%H --grep '\[skip changelog\]' -i)
+          args=""
+          for c in $commits; do
+            args="$args --skip-commit=$c"
+          done
+          echo "skip_args=$args" >> $GITHUB_OUTPUT
       - name: Read changelog
         id: changelog
         run: |
@@ -163,9 +196,13 @@ jobs:
       - name: get version
         id: get_version
         run: |
-          version=$(python -c "import sys; sys.path.insert(0, '.'); import version; print('v' + version.__version__)")
-          echo "::set-output name=version::$version"
-          echo $version > version.txt
+          if [ -n "${{ needs.prepare-release.outputs.version }}" ]; then
+            version="${{ needs.prepare-release.outputs.version }}"
+          else
+            version=$(python -c "import sys; sys.path.insert(0, '.'); import version; print('v' + version.__version__)")
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "$version" > version.txt
       - name: download executable
         uses: actions/download-artifact@v4.1.8
         with:
