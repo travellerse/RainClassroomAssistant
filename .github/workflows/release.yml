@@ -26,8 +26,45 @@ permissions:
   contents: write
 
 jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Update version if manual trigger
+        run: |
+          python update_version.py ${{ github.event.inputs.version }}
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Commit version bump
+        run: |
+          git add version.py file_version_info.txt
+          git commit -m "chore(release): bump version to v${{ github.event.inputs.version }}" || echo "No changes to commit"
+      - name: Tag release
+        run: |
+          version="v${{ github.event.inputs.version }}"
+          if git rev-parse "$version" >/dev/null 2>&1; then
+            echo "Tag $version already exists, skipping tag creation"
+          else
+            git tag -a "$version" -m "$version"
+          fi
+      - name: Push changes and tags
+        run: |
+          git push origin HEAD
+          git push origin --tags
+
   pyinstaller-build:
     runs-on: windows-latest
+    needs: prepare-release
     outputs:
       executable_path: ./dist/RainClassroomAssistant.exe
     steps:
@@ -110,10 +147,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Update version if manual trigger
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          python update_version.py ${{ github.event.inputs.version }}
       - name: Generate changelog
         uses: orhun/git-cliff-action@v4
         with:
