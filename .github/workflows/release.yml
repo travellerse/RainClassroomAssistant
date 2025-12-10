@@ -4,13 +4,13 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "file_version_info.txt"
-      - "RainClassroomAssistant.spec"
-      - "python-app.yml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "file_version_info.txt"
+  #     - "RainClassroomAssistant.spec"
+  #     - "python-app.yml"
   workflow_dispatch:
     inputs:
       version:
