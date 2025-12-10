@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import subprocess
+import sys
 
 if len(sys.argv) != 2:
     print("Usage: python update_version.py <new_version>")

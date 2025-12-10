@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -52,8 +52,12 @@ VSVersionInfo(
 parts = version.__version__.split(".")
 major, minor, patch = int(parts[0]), int(parts[1]), int(parts[2])
 
-content = template.replace("filevers=(0, 5, 3, 0)", f"filevers=({major}, {minor}, {patch}, 0)")
-content = content.replace("prodvers=(0, 5, 3, 0)", f"prodvers=({major}, {minor}, {patch}, 0)")
+content = template.replace(
+    "filevers=(0, 5, 3, 0)", f"filevers=({major}, {minor}, {patch}, 0)"
+)
+content = content.replace(
+    "prodvers=(0, 5, 3, 0)", f"prodvers=({major}, {minor}, {patch}, 0)"
+)
 content = content.replace("{version}", version.__version__)
 
 with open("file_version_info.txt", "w", encoding="utf-8") as f:
