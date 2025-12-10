@@ -187,6 +187,16 @@ class Lesson:
             times += 1
             time.sleep(1)
         self.headers["Authorization"] = "Bearer %s" % set_auth
+
+        # {"code":50070,"msg":"DYNAMIC_QR_CHECK_IN_REFUSED","data":null}
+        if dict_result(r.text)["code"] != 0:
+            meg = "%s签到失败，原因：%s" % (
+                self.lessonname,
+                dict_result(r.text)["msg"].replace("_", " "),
+            )
+            self.add_message(meg, 7)
+            return None
+
         return dict_result(r.text)["data"]["lessonToken"]
 
     def on_message(self, wsapp, message):
@@ -369,6 +379,13 @@ class Lesson:
 
     def start_lesson(self, delay, callback):
         self.auth = self.checkin_class()
+        if self.auth is None:
+            meg = "%s签到失败，无法加入课堂监听" % self.lessonname
+            self.add_message(
+                meg,
+                7,
+            )
+            return None
         rtn = self.get_lesson_info()
         teacher = rtn["teacher"]["name"]
         title = rtn["title"]
