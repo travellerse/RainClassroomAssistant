@@ -1,7 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+import sys
 import apprise
+
+sys.path.insert(0, '.')
 import version
 
 apprise_path = os.path.dirname(apprise.__file__)
@@ -9,7 +12,7 @@ apprise_path = os.path.dirname(apprise.__file__)
 
 a = Analysis(
     ['RainClassroomAssistant.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
     datas=[('UI/Image/favicon.ico','UI/Image'),('UI/Image/NoRainClassroom.jpg','UI/Image'), (apprise_path, 'apprise')],
     hiddenimports=[],
