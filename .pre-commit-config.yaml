@@ -36,7 +36,7 @@ repos:
         args: ["--profile", "black", "--filter-files"]
 
   - repo: https://github.com/oxipng/oxipng
-    rev: v10.0.0
+    rev: v10.1.0
     hooks:
       - id: oxipng
         name: Image Compression
