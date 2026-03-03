@@ -6,3 +6,6 @@ build.cmd
 downloads
 .vscode
 .venv
+# pixi environments
+.pixi/*
+!.pixi/config.toml
